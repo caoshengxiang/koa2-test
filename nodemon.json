@@ -3,7 +3,10 @@
   "ignore": [
     ".git",
     ".svn",
-    "node_modules/**/node_modules"
+    ".idea",
+    "node_modules/**/node_modules",
+    "npm-debug.log",
+    "README.md"
   ],
   "verbose": true,
   "execMap": {
