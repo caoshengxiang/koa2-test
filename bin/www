@@ -7,7 +7,8 @@
 var app = require('../app');
 var debug = require('debug')('demo:server');
 var http = require('http');
-
+var fs = require('fs');
+var logConfig = require('../config/log_config');
 /**
  * Get port from environment and store in Express.
  */
@@ -88,3 +89,33 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+
+/**
+ * ???????????????????
+ */
+var confirmPath = function(pathStr) {
+
+    if(!fs.existsSync(pathStr)){
+        fs.mkdirSync(pathStr);
+        console.log('createPath: ' + pathStr);
+    }
+}
+
+/**
+ * ???log????
+ */
+var initLogPath = function(){
+    //??log????'logs'
+    if(logConfig.baseLogPath){
+        confirmPath(logConfig.baseLogPath)
+        //?????logType?????????
+        for(var i = 0, len = logConfig.appenders.length; i < len; i++){
+            if(logConfig.appenders[i].path){
+                confirmPath(logConfig.baseLogPath + logConfig.appenders[i].path);
+            }
+        }
+    }
+}
+
+initLogPath();
