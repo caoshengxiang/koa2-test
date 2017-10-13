@@ -1,16 +1,6 @@
-const router = require('koa-router')()
+const User = require('../schema/user')
 
-router.prefix('/users')
-
-const User  = require('../sql/schema/user')
-
-
-
-router.get('/', function (ctx, next) {
-  ctx.body = 'this is a users response!'
-})
-
-router.get('/userList', async(ctx, next) => {
+exports.userList = async(ctx, next) => {
     await new Promise((resolve, reject)=>{
         User.find({name: 'allen'}, function (err, data) {
             if(err) {
@@ -38,33 +28,4 @@ router.get('/userList', async(ctx, next) => {
     }, (err)=>{
         ctx.body = err
     })
-})
-
-
-
-router.get('/bar', function (ctx, next) {
-  ctx.body = 'this is a users/bar response'
-})
-
-router.get('/getUser', async(ctx, next) => {
-    ctx.body = {
-        status: 'success',
-        data: [{
-        username: 'allen',
-        age: 24,
-        sex: '男',
-        icon: '',
-        id: 1
-    }]}
-})
-
-router.post('/addUser', async(ctx, next) => {
-    console.log('add user', ctx.request.body)
-
-    ctx.body = {
-        status: 'success',
-        data: '添加成功'
-    }
-})
-
-module.exports = router
+}
