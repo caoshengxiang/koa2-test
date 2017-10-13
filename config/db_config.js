@@ -1,4 +1,4 @@
 module.exports = {
-    dbLocal: 'mongodb://localhost:27017/',
+    dbLocal: 'mongodb://127.0.0.1:27017/',
     dbName: 'test',
 }
