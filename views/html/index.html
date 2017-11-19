@@ -5,19 +5,17 @@
     <title>Title</title>
 </head>
 <body>
-    hello nginx, my name's <span id="name"></span>
-
-    <img src="/api/1.jpg" alt="">
+    hello nginx, <span id="name"></span>
 </body>
-<script src="static/jquery-3.2.1.js"></script>
+<script src="jquery-3.2.1.js"></script>
 <script>
-    $.ajax({
+    $ajax({
         type: 'get',
         dataType: 'json',
         url: '/api/users/getUser',
         success: function (data) {
             console.log(data)
-            $('#name').text(data.data.username)
+            $('#name').text(data.username)
         }
     })
 </script>

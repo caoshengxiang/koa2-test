@@ -29,3 +29,16 @@ exports.userList = async(ctx, next) => {
         ctx.body = err
     })
 }
+
+exports.getUser = async(ctx, next) => {
+    ctx.body = {
+        status: 'success',
+        data: {
+            username: 'allen',
+            age: 24,
+            sex: '男',
+            icon: '',
+            id: 1
+        }
+    }
+}

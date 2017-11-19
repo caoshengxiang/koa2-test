@@ -6,6 +6,7 @@ const userApi = require('../sql/control/user')
 
 // 用户相关
 router.get('/users/userList', userApi.userList)
+router.get('/users/getUser', userApi.getUser)
 
 
 
