@@ -1,24 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8">
+  <title>koa2 接口测试</title>
 </head>
+<style>
+  #table {
+    text-align: left;
+  }
+</style>
 <body>
-    hello nginx, my name's <span id="name"></span>
+<p>hello nginx, my name's <span id="userName"></span></p>
 
-    <img src="/api/1.jpg" alt="">
+<img width="100%" src="/api/1.jpg" alt="">
+
+<form>
+  <p><label for="name">名字: </label><input type="text" name="name" id="name"></p>
+  <p><label for="age">年龄: </label><input type="text" name="age" id="age"></p>
+  <p><label for="sex">性别: </label><input type="text" name="sex" id="sex"></p>
+  <p><label for="icon">头像: </label><input type="text" name="icon" id="icon"></p>
+  <p><label for="password">密码: </label><input type="text" name="password" id="password"></p>
+  <p>
+    <button id="submit">添加</button>
+  </p>
+</form>
+
+<table id="table">
+  <thead>
+  <th>id</th>
+  <th>名字</th>
+  <th>年龄</th>
+  <th>性别</th>
+  <th>头像</th>
+  <th>密码</th>
+  <th>操作</th>
+  </thead>
+  <tbody id="userList">
+  </tbody>
+</table>
 </body>
 <script src="static/jquery-3.2.1.js"></script>
 <script>
-    $.ajax({
-        type: 'get',
-        dataType: 'json',
-        url: '/api/users/getUser',
-        success: function (data) {
-            console.log(data)
-            $('#name').text(data.data.username)
-        }
+  $(function () {
+    apiUserList()
+
+    $('#submit').click(function (e) {
+      e.preventDefault()
+
+      apiAddUser({
+        name: $('#name').val(),
+        age: $('#age').val(),
+        sex: $('#sex').val(),
+        icon: $('#icon').val(),
+        password: $('#password').val(),
+      })
     })
+  })
+</script>
+<script>
+  function apiUserList () {
+    $.ajax({
+      type: 'post',
+      dataType: 'json',
+      // data: {name: 'allen'},
+      url: '/api/users/userList',
+      success: function (data) {
+        var str = ''
+        if (!data.data.length) {
+          $('#userList').html()
+        } else {
+          for (var i = 0; i < data.data.length; i++) {
+            str += '<tr data-id="' + data.data[i]._id + '">' +
+              '<td>' + data.data[i]._id + '</td>' +
+              '<td>' + data.data[i].name + '</td>' +
+              '<td>' + data.data[i].age + '</td>' +
+              '<td>' + data.data[i].sex + '</td>' +
+              '<td>' + data.data[i].icon + '</td>' +
+              '<td>' + data.data[i].password + '</td>' +
+              '<td><a data-id="' + data.data[i]._id + '" class="modify">修改</a>　<a  data-id="' + data.data[i]._id + '" class="del">删除</a></td>' +
+              '</tr>'
+          }
+          $('#userList').html(str).delegate('.modify', 'click', function (event) {
+            // setForm() // todo 修改填充表单
+            let p = {id: $(this).attr('data-id')}
+            if ($('#name').val()) {
+              p.name = $('#name').val()
+            }
+            if ($('#age').val()) {
+              p.age = $('#age').val()
+            }
+            if ($('#sex').val()) {
+              p.sex = $('#sex').val()
+            }
+            if ($('#icon').val()) {
+              p.icon = $('#icon').val()
+            }
+            if ($('#password').val()) {
+              p.password = $('#password').val()
+            }
+            modifyUser(p)
+          }).delegate('.del', 'click', function (event) {
+            delUser({
+              id: $(this).attr('data-id')
+            })
+          })
+        }
+
+      },
+    })
+  }
+
+  function setForm (d) {
+    $('#name').val(d.name)
+    $('#age').val(d.age)
+    $('#sex').val(d.sex)
+    $('#icon').val(d.icon)
+    $('#password').val(d.password)
+  }
+
+  function apiApiUserDetail () {
+    $.ajax({
+      type: 'get',
+      dataType: 'json',
+      url: '/api/users/getUser',
+      success: function (data) {
+        console.log(data)
+        $('#userName').text(data.data.name)
+      },
+    })
+  }
+
+  function apiAddUser (param) {
+    $.post('/api/users/addUser', param, function (data) {
+      console.log(data)
+      apiUserList() // 拉列表
+    }, 'json')
+  }
+
+  function modifyUser (param) {
+    $.post('/api/users/update', param, function (data) {
+      console.log(data)
+      apiUserList() // 拉列表
+    }, 'json')
+  }
+  function delUser (param) {
+    $.post('/api/users/removeUser', param, function (data) {
+      console.log(data)
+      apiUserList() // 拉列表
+    }, 'json')
+  }
 </script>
 </html>

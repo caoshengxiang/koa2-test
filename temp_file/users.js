@@ -60,7 +60,6 @@ router.get('/getUser', async(ctx, next) => {
 
 router.post('/addUser', async(ctx, next) => {
     console.log('add user', ctx.request.body)
-
     ctx.body = {
         status: 'success',
         data: '添加成功'
