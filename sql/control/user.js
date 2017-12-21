@@ -111,11 +111,11 @@ exports.removeUser = async (ctx, next) => {
 exports.updateUser = async (ctx, next) => {
   let reqBody = ctx.request.body
   new Promise((resolve, reject) => {
-    User.update({_id: reqBody.id}, {$set: reqBody}, (err, d) => { // todo 这个方法有问题?接口404，但是数据修改成功
+    User.update({_id: reqBody.id}, {$set: reqBody}, function(err) { // todo 这个方法有问题?接口404，但是数据修改成功
       if (err) {
         reject(err)
       } else {
-        resolve(d)
+        resolve('更新成功')
       }
     })
   }).then((data) => {
