@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>koa2 接口测试</title>
+</head>
+<style>
+    #table {
+        text-align: left;
+    }
+</style>
+<body>
+<p>jquery cors test</p>
+<p id="userName"></p>
+
+</body>
+<script src="static/jquery-3.2.1.js"></script>
+<script>
+
+</script>
+<script>
+    // jQuery.support.cors = true;
+    $.ajax({
+        type: 'get',
+        dataType: 'json',
+        url: 'http://localhost:3000/api/users/getUser',
+        // xhrFields: {
+        //     'Access-Control-Allow-Origin': '*'
+        // },
+        success: function (data) {
+            console.log(data)
+            $('#userName').text(data.data.name)
+        },
+    })
+
+</script>
+</html>

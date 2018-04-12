@@ -37,6 +37,7 @@ exports.userList = async (ctx, next) => {
 
 // 用户详细
 exports.getUser = async (ctx, next) => {
+    ctx.set('Access-Control-Allow-Origin', '*'); // * 所有请求，或http://localhost:8080
   ctx.body = {
     status: 'success',
     data: {
