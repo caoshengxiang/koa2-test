@@ -78,3 +78,22 @@ PM2 是一个带有负载均衡功能的 Node 应用的进程管理器。
 [「新手向」koa2从起步到填坑](http://www.jianshu.com/p/6b816c609669)
 
 [github项目](https://github.com/guo-yu/koa-guide)
+
+### 数据库目录
+
+* mongodb安装目录/data
+    * db
+    * log
+* Server
+* mongod.cfg
+
+### 数据库启动
+
+这是我window下的数据库目录
+```shell
+E:\workSoft\MongoDB\Server\3.2\bin>mongod --dbpath E:\workSoft\MongoDB\data\db --logpath \data\log
+```
+
+### 开机启动
+
+### 启动配置文件

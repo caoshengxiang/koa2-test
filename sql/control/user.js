@@ -9,17 +9,15 @@ exports.userList = async (ctx, next) => {
     console.log(ctx.request.params)
     User.find(reqBody, function (err, data) { // 加入条件查询
       if (err) {
-        reject({
-          status: 'error',
-          data: err,
-        })
+        reject(err)
       } else {
-        if (data.length == 0) {
-          reject('该用户不存在')
-
-        } else {
+        // if (data.length == 0) {
+        //     resolve([])
+        //
+        // } else {
+        //   resolve(data)
+        // }
           resolve(data)
-        }
       }
     })
   }).then((data) => {
