@@ -10,7 +10,7 @@ const index = require('./routes/index')
 const api = require('./routes/api')
 
 // 测试websocket
-require('./sql/control/websocket')
+// require('./sql/control/websocket')
 
 //log工具
 const logUtil = require('./utils/log_util')
