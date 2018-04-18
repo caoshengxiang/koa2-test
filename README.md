@@ -97,3 +97,7 @@ E:\workSoft\MongoDB\Server\3.2\bin>mongod --dbpath E:\workSoft\MongoDB\data\db -
 ### 开机启动
 
 ### 启动配置文件
+
+### 帮助
+
+[socket.io 中文手册](https://www.cnblogs.com/lxxhome/p/5980615.html)
