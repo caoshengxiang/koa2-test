@@ -7,9 +7,10 @@ const userApi = require('../sql/control/user')
 // 用户相关
 router.post('/users/userList', userApi.userList)
 router.get('/users/getUser', userApi.getUser)
+router.get('/users/getUserInfo', userApi.getUserInfo)
 router.post('/users/addUser', userApi.addUser)
 router.post('/users/removeUser', userApi.removeUser)
-router.post('/users/update', userApi.updateUser)
+router.post('/users/update/:id', userApi.updateUser)
 
 
 

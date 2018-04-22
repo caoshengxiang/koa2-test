@@ -1,47 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>koa2 接口测试</title>
+    <meta charset="UTF-8">
+    <title>koa2 接口测试</title>
 </head>
 <style>
-  #table {
-    text-align: left;
-  }
+    #table {
+        text-align: left;
+    }
 </style>
 <body>
 <p>hello nginx, my name's <span id="userName"></span></p>
 
-<img width="100px" src="/api/1.jpg" alt="">
+<div>
+    <img width="100px" src="/api/1.jpg" alt="">
+</div>
 
-<form>
-  <p><label for="name">名字: </label><input type="text" name="name" id="name"></p>
-  <p><label for="age">年龄: </label><input type="text" name="age" id="age"></p>
-  <p><label for="sex">性别: </label><input type="text" name="sex" id="sex"></p>
-  <p><label for="icon">头像: </label><input type="text" name="icon" id="icon"></p>
-  <p><label for="password">密码: </label><input type="text" name="password" id="password"></p>
-  <p>
-    <button id="submit">添加</button>
-  </p>
+
+<form style="display: inline-block">
+    <p><label for="name">名字: </label><input type="text" name="name" id="name"></p>
+    <p><label for="age">年龄: </label><input type="text" name="age" id="age"></p>
+    <p><label for="sex">性别: </label><input type="text" name="sex" id="sex"></p>
+    <p><label for="icon">头像: </label><input type="text" name="icon" id="icon"></p>
+    <p><label for="password">密码: </label><input type="text" name="password" id="password"></p>
+    <p>
+        <button id="submit">添加</button>
+    </p>
+</form>
+<form style="display: inline-block;margin-left: 50px;">
+    <p><label for="name2">名字: </label><input type="text" name="name" id="name2"></p>
+    <p><label for="age2">年龄: </label><input type="text" name="age" id="age2"></p>
+    <p><label for="sex2">性别: </label><input type="text" name="sex" id="sex2"></p>
+    <p><label for="icon2">头像: </label><input type="text" name="icon" id="icon2"></p>
+    <p><label for="password2">密码: </label><input type="text" name="password" id="password2"></p>
+    <p>
+        <button id="submit2">修改</button>
+    </p>
 </form>
 
 <table id="table">
-  <thead>
-  <th>id</th>
-  <th>名字</th>
-  <th>年龄</th>
-  <th>性别</th>
-  <th>头像</th>
-  <th>密码</th>
-  <th>操作</th>
-  </thead>
-  <tbody id="userList">
-  </tbody>
+    <thead>
+    <th>id</th>
+    <th>名字</th>
+    <th>年龄</th>
+    <th>性别</th>
+    <th>头像</th>
+    <th>密码</th>
+    <th>操作</th>
+    </thead>
+    <tbody id="userList">
+    </tbody>
 </table>
 </body>
 <script src="static/jquery-3.2.1.js"></script>
 <script>
   $(function () {
+    apiApiUserDetail()
     apiUserList()
 
     $('#submit').click(function (e) {
@@ -55,10 +69,22 @@
         password: $('#password').val(),
       })
     })
+    $('#submit2').click(function (e) {
+      e.preventDefault()
+
+      let p = {}
+      p.name = $('#name2').val()
+      p.age = $('#age2').val()
+      p.sex = $('#sex2').val()
+      p.icon = $('#icon2').val()
+      p.password = $('#password2').val()
+
+      modifyUser($(this).attr('data-id'), p)
+    })
   })
 </script>
 <script>
-  function apiUserList () {
+  function apiUserList() {
     $.ajax({
       type: 'post',
       dataType: 'json',
@@ -81,24 +107,7 @@
               '</tr>'
           }
           $('#userList').html(str).delegate('.modify', 'click', function (event) {
-            // setForm() // todo 修改填充表单
-            let p = {id: $(this).attr('data-id')}
-            if ($('#name').val()) {
-              p.name = $('#name').val()
-            }
-            if ($('#age').val()) {
-              p.age = $('#age').val()
-            }
-            if ($('#sex').val()) {
-              p.sex = $('#sex').val()
-            }
-            if ($('#icon').val()) {
-              p.icon = $('#icon').val()
-            }
-            if ($('#password').val()) {
-              p.password = $('#password').val()
-            }
-            modifyUser(p)
+            setForm($(this).attr('data-id'))
           }).delegate('.del', 'click', function (event) {
             delUser({
               id: $(this).attr('data-id')
@@ -110,15 +119,24 @@
     })
   }
 
-  function setForm (d) {
-    $('#name').val(d.name)
-    $('#age').val(d.age)
-    $('#sex').val(d.sex)
-    $('#icon').val(d.icon)
-    $('#password').val(d.password)
+  function setForm(id) {
+    $.ajax({
+      type: 'get',
+      dataType: 'json',
+      data: {id: id},
+      url: '/api/users/getUserInfo',
+      success: function (d) {
+        $('#name2').val(d.data.name)
+        $('#age2').val(d.data.age)
+        $('#sex2').val(d.data.sex)
+        $('#icon2').val(d.data.icon)
+        $('#password2').val(d.data.password)
+        $('#submit2').attr('data-id', id)
+      }
+    })
   }
 
-  function apiApiUserDetail () {
+  function apiApiUserDetail() {
     $.ajax({
       type: 'get',
       dataType: 'json',
@@ -130,20 +148,21 @@
     })
   }
 
-  function apiAddUser (param) {
+  function apiAddUser(param) {
     $.post('/api/users/addUser', param, function (data) {
       console.log(data)
       apiUserList() // 拉列表
     }, 'json')
   }
 
-  function modifyUser (param) {
-    $.post('/api/users/update', param, function (data) {
+  function modifyUser(id, param) {
+    $.post('/api/users/update/'+id, param, function (data) {
       console.log(data)
       apiUserList() // 拉列表
     }, 'json')
   }
-  function delUser (param) {
+
+  function delUser(param) {
     $.post('/api/users/removeUser', param, function (data) {
       console.log(data)
       apiUserList() // 拉列表
