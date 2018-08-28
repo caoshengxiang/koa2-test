@@ -135,19 +135,21 @@ exports.removeUser = async (ctx, next) => {
 // obj.update(查询条件,更新对象,callback(err))
 exports.updateUser = async (ctx, next) => {
   let reqBody = ctx.request.body
-  let reqParamsId = ctx.params.id
+  let reqParamsId = ctx.params.id // path 参数
   console.log(reqParamsId, 'allen up')
   new Promise((resolve, reject) => {
-    if (!reqBody.id) {
-      reject('修改错误，id不存在')
-    }
-    User.update({_id: reqParamsId}, {$set: reqBody}, function(err) { // todo 这个方法有问题?接口404，但是数据修改成功【找到原因$set中有_id】
+    User.update({ name: 'allen'}, {$set: reqBody}, function(err) { // todo 这个方法有问题?接口404，但是数据修改成功【找到原因$set中有_id】
       if (err) {
+        console.log('error')
         reject(err)
       } else {
-        resolve('id:'+reqParamsId+'更新成功')
+        console.log('succ', reqParamsId)
+        resolve('更新成功')
       }
     })
+    if (!reqBody.id) { // todo 没有reject 或者resolve 就会404 ？？？？
+      resolve('修改错误，id不存在')
+    }
   }).then((data) => {
     ctx.body = {
       status: StatusCode.SUCCESS,

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <input id="msg" type="text">
+    <input id="sendMsg" type="button" value="发送">
+</div>
+<div style="margin-top: 30px;padding: 20px;">
+    <p>聊天记录(<span id="currentUser"></span>)：</p>
+    <ul id="charBox">
+    </ul>
+</div>
+</body>
+<script src="../static/socket.io.js"></script>
+<script src="../static/jquery-3.2.1.js"></script>
+<script>
+  var name = ['面粉公斤', '豆沙', '秒爆', '阿联', 'allen']
+  var i = parseInt(Math.random() * 4, 10)
+  var socket = io.connect('http://localhost:3000')
+  var chatBox = $('#charBox')
+  $('#currentUser').text(name[i])
+  $('#sendMsg').click(function () {
+    send()
+  })
+  $('#msg').keydown(function (event) {
+    if (event.which === 13) {
+      send()
+    }
+  })
+
+  socket.on('news', function (data) {
+    console.log(data)
+    chatBox.prepend('<li>' + formatDate(data.sendTime) + '<br>' + data.from + ': ' + data.content + '</li>')
+  })
+
+  $.ajax({
+    type: 'post',
+    dataType: 'json',
+    // data: {name: 'allen'},
+    url: 'http://localhost:3000/api/chat/list',
+    success: function (data) {
+      for (let i in data.data) {
+        chatBox.prepend('<li>' + formatDate(data.data[i].sendTime) + '<br>' + data.data[i].from + ': ' + data.data[i].content + '</li>')
+      }
+    },
+    error: function (e) {
+      console.log(e)
+    }
+  })
+
+  function send () {
+    if ($('#msg').val()) {
+      // console.log(name, i, name[i])
+      socket.emit('client', {from: name[i], to: '_ALL', content: $('#msg').val()})
+      $('#msg').val('')
+    } else {
+      alert('请输入内容')
+    }
+  }
+  function formatDate(t) {
+    if (!t || typeof t != 'number') {
+      return ''
+    }
+    var now = new Date(t)
+    var year = now.getFullYear(),
+      month = now.getMonth() + 1,
+      date = now.getDate(),
+      hour = now.getHours(),
+      minute = now.getMinutes(),
+      second = now.getSeconds();
+
+    return year + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second;
+  }
+</script>
+</html>

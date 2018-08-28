@@ -38,7 +38,7 @@
     </p>
 </form>
 
-<table id="table">
+<table id="table" style="width: 100%;">
     <thead>
     <th>id</th>
     <th>名字</th>
@@ -101,7 +101,7 @@
               '<td>' + data.data[i].name + '</td>' +
               '<td>' + data.data[i].age + '</td>' +
               '<td>' + data.data[i].sex + '</td>' +
-              '<td>' + data.data[i].icon + '</td>' +
+              '<td><img style="width: 30px" src="' + data.data[i].icon + '"></td>' +
               '<td>' + data.data[i].password + '</td>' +
               '<td><a data-id="' + data.data[i]._id + '" class="modify">修改</a>　<a  data-id="' + data.data[i]._id + '" class="del">删除</a></td>' +
               '</tr>'

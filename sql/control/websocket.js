@@ -1,20 +1,21 @@
-const Koa = require('koa'),
-    route = require('koa-route'),
-    websockify = require('koa-websocket');
 
+// 基于koa-websocket实现的即时通讯
+// 把下面的这个几个模块安装一下
+// 这只是功能模块完成，后期肯定要连接数据库保存数据
+const Koa = require('koa')
+// 路由
+const route = require('koa-route')
+// koa封装的websocket这是官网（很简单有时间去看一下https://www.npmjs.com/package/koa-websocket）
+const websockify = require('koa-websocket')
 const app = websockify(new Koa());
-/*app.ws.use(function(ctx, next) {
-    // return `next` to pass the context (ctx) on to the next ws middleware
-    return next(ctx);
-});*/
-
-// Using routes
-app.ws.use(route.all('/test/:id', function (ctx) {
-    // `ctx` is the regular koa context created from the `ws` onConnection `socket.upgradeReq` object.
-    // the websocket is added to the context on `ctx.websocket`.
-    ctx.websocket.send('Hello World');
-    ctx.websocket.on('message', function(message) {
-        // do something with the message from client
-        console.log(message);
-    });
-}));
+app.ws.use(function (ctx, next) {
+  return next(ctx)
+})
+app.ws.use(route.all('/', function (ctx) {
+  ctx.websocket.on('message', function (message) {
+    // 返回给前端的数据
+    ctx.websocket.send(message)
+  })
+}))
+app.listen(3000)
+// 会默认打开127.0.0.1:3000这个端口号
