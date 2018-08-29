@@ -3,26 +3,22 @@ const StatusCode = require('../../config/status_code')
 
 module.exports = function (server) {
   var io = require('socket.io')(server)
-  var group = {} // todo 用对象是可以去重用户得
+  var group = {} // 用对象是可以去重用户得
   io.on('connection', function (socket) {
+    // console.log(socket.handshake.query)
     var currentUser = {//获取到的用户数据
-      uid: socket.id,
+      uid: socket.handshake.query.id,
       socket: socket,
     }
-    group[socket.id] = currentUser//保存用户连接
+    group[currentUser.uid] = currentUser//保存用户连接
     let connectionNum = 0
     for (let key in group) {
       connectionNum++
     }
     console.log('会话人数：'+ connectionNum)
 
-    socket.emit('news',
-      {
-        from: '聊天助手',
-        to: '_ALL',
-        sendTime: Date.parse(new Date()),
-        content: '欢迎来到聊天室！',
-      })
+    socket.emit('news', {from: '聊天助手', to: '_ALL', sendTime: Date.parse(new Date()),content: '欢迎来到聊天室！'})
+
     currentUser.socket.on('client', function (data) {
       // console.log(data)
       new Promise((resolve, reject) => {

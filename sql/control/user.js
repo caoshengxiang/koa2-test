@@ -19,6 +19,7 @@ exports.getUser = async (ctx, next) => {
 // 用户列表
 // obj.find(查询条件,callback(err, data))
 exports.userList = async (ctx, next) => {
+  ctx.set('Access-Control-Allow-Origin', '*')
   await new Promise((resolve, reject) => {
     let reqBody = ctx.request.body // post参数
     console.log(ctx.request.params)
@@ -77,7 +78,7 @@ exports.getUserInfo = async (ctx, next) => {
 // 用户添加
 // Model.create(文档数据, callback(err)))
 exports.addUser = async (ctx, next) => {
-  // console.log('add user', ctx.request.body)
+  ctx.set('Access-Control-Allow-Origin', '*')
   let reqBody = ctx.request.body
   await new Promise((resolve, reject) => {
     User.create(reqBody, function (err) {
@@ -104,6 +105,7 @@ exports.addUser = async (ctx, next) => {
 // obj.remove(查询条件,callback(err))
 exports.removeUser = async (ctx, next) => {
   let reqBody = ctx.request.body
+  ctx.set('Access-Control-Allow-Origin', '*')
   if (!reqBody.id) {
     ctx.body = {
       status: StatusCode.ERROR,
@@ -136,7 +138,7 @@ exports.removeUser = async (ctx, next) => {
 exports.updateUser = async (ctx, next) => {
   let reqBody = ctx.request.body
   let reqParamsId = ctx.params.id // path 参数
-  console.log(reqParamsId, 'allen up')
+  ctx.set('Access-Control-Allow-Origin', '*')
   new Promise((resolve, reject) => {
     User.update({ name: 'allen'}, {$set: reqBody}, function(err) { // todo 这个方法有问题?接口404，但是数据修改成功【找到原因$set中有_id】
       if (err) {

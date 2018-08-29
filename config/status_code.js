@@ -1,3 +1,3 @@
-exports.SUCCESS = 'success'　// 成功
+exports.SUCCESS = true　// 成功
 
-exports.ERROR = 'error'　// 错误
+exports.ERROR = false　// 错误
