@@ -7,6 +7,7 @@ router.get('/', async (ctx, next) => {
 
 
 router.get('/string', async (ctx, next) => {
+  ctx.set('Access-Control-Allow-Origin', '*'); // * 所有请求，或指定http://localhost:8080
   ctx.body = 'koa2 string'
 })
 
