@@ -2,20 +2,27 @@ const router = require('koa-router')()
 const WXBizDataCrypt = require('../utils/WXBizDataCrypt')
 const request = require("request");
 const Secret = require('../utils/secret')
+const CryptoJS = require('crypto-js')
 
 router.get('/', async (ctx, next) => {
   await ctx.render('index')
 })
 
 
-
 router.get('/string', async (ctx, next) => {
   ctx.set('Access-Control-Allow-Origin', '*'); // * 所有请求，或指定http://localhost:8080
 
   /*test criptojs*/
-  let encryptData = Secret.Encrypt('123')
+  // let encryptData = Secret.Encrypt('123')
 
-  ctx.body = 'aes secret: ' + encryptData
+  // ctx.body = 'aes secret: ' + encryptData
+  let d = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse('123456'))
+
+  ctx.body = {
+    data: CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse('123456')),
+    text: CryptoJS.enc.Utf8.stringify(CryptoJS.enc.Base64.parse('MTIzNDU2')),
+    md5: CryptoJS.MD5('123456').toString(),
+  }
 })
 
 router.get('/json', async (ctx, next) => {
