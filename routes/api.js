@@ -5,6 +5,7 @@ router.prefix('/api') // 接口在api/下，如：http://localhost:3000/api/user
 const userApi = require('../sql/control/user')
 const chatApi = require('../sql/control/chat')
 const accountApi = require('../sql/control/account')
+const bannerApi = require('../sql/control/banner')
 
 // 用户相关
 router.get('/users/getUser', userApi.getUser)
@@ -20,6 +21,13 @@ router.post('/chat/list', chatApi.chatList)
 // 登录
 router.post('/user/login', accountApi.userLogin)
 
-// mongose 增删改查 https://blog.csdn.net/u012810020/article/details/54582051
+// banner 相关
+router.get('/banner/detail', bannerApi.getBannerDetail)
+router.post('/banner/list', bannerApi.bannerList)
+router.post('/banner/add', bannerApi.addBanner)
+router.delete('/banner/delete', bannerApi.removeBanner)
+router.put('/banner/update', bannerApi.updateBanner)
 
 module.exports = router
+
+// mongose 增删改查 https://blog.csdn.net/u012810020/article/details/54582051

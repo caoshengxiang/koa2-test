@@ -23,27 +23,27 @@
     $.ajax({
         type: 'get',
         dataType: 'json',
-        url: 'http://localhost:3000/api/users/getUser',
+        url: 'http://localhost:3000/api/banner/detail',
         // xhrFields: {
         //     'Access-Control-Allow-Origin': '*'
         // },
         success: function (data) {
             console.log(data)
-            $('#userName').text(data.data.name)
+            // $('#userName').text(data.data.name)
         },
     })
 
-    $.ajax({
-      type: 'post',
-      dataType: 'json',
-      // data: {name: 'allen'},
-      url: 'http://localhost:3000/api/users/userList',
-      success: function (data) {
-        console.log(data)
-      },
-      error: function (e) {
-        console.log(e)
-      }
-    })
+    // $.ajax({
+    //   type: 'post',
+    //   dataType: 'json',
+    //   // data: {name: 'allen'},
+    //   url: 'http://localhost:3000/api/users/userList',
+    //   success: function (data) {
+    //     console.log(data)
+    //   },
+    //   error: function (e) {
+    //     console.log(e)
+    //   }
+    // })
 </script>
 </html>
