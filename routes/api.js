@@ -8,6 +8,7 @@ const accountApi = require('../sql/control/account')
 const bannerApi = require('../sql/control/banner')
 const productApi = require('../sql/control/product')
 const newsApi = require('../sql/control/news')
+const emailApi = require('../sql/control/email')
 
 // 用户相关
 router.get('/users/getUser', userApi.getUser)
@@ -43,6 +44,14 @@ router.post('/product/list', newsApi.list)
 router.post('/product/add', newsApi.add)
 router.delete('/product/delete', newsApi.remove)
 router.put('/product/update/:id', newsApi.update)
+
+// 邮件 相关
+router.get('/email/detail', emailApi.detail)
+router.post('/email/list', emailApi.list)
+router.post('/email/add', emailApi.add)
+router.delete('/email/delete', emailApi.remove)
+router.put('/email/update/:id', emailApi.update)
+router.post('/email/send', emailApi.send)
 
 module.exports = router
 

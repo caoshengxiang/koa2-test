@@ -7,7 +7,6 @@ const newSchema = Schema({
   content: String, // 详细介绍，富文本
   type: Number, // 分类; 1:
   listImg: String, // 列表图
-  detailImgs: String, // 详情图，串用逗号分隔
   created: Number, // 创建时间戳
 })
 

@@ -19,31 +19,50 @@
 
 </script>
 <script>
-    // jQuery.support.cors = true;
-    $.ajax({
-        type: 'get',
-        dataType: 'json',
-        url: 'http://localhost:3000/api/banner/detail',
-        // xhrFields: {
-        //     'Access-Control-Allow-Origin': '*'
-        // },
-        success: function (data) {
-            console.log(data)
-            // $('#userName').text(data.data.name)
-        },
-    })
+  // jQuery.support.cors = true;
+  // $.ajax({
+  //     type: 'get',
+  //     dataType: 'json',
+  //     url: 'http://localhost:3000/api/banner/detail?id=5d8af6a316b4952dd0e68a73',
+  //     // xhrFields: {
+  //     //     'Access-Control-Allow-Origin': '*'
+  //     // },
+  //     success: function (data) {
+  //         console.log(data)
+  //         // $('#userName').text(data.data.name)
+  //     },
+  // })
+  //
+  // $.ajax({
+  //   type: 'post',
+  //   dataType: 'json',
+  //   data: {title: 'allen', sub: '倒计时开始大哭飞机喀什假大空', content: '<p>正文富文本</p>', type: 3, listImg: 'http://e.hiphotos.baidu.com/image/h%3D300/sign=a9e671b9a551f3dedcb2bf64a4eff0ec/4610b912c8fcc3cef70d70409845d688d53f20f7.jpg', detailImgs: 'http://e.hiphotos.baidu.com/image/h%3D300/sign=a9e671b9a551f3dedcb2bf64a4eff0ec/4610b912c8fcc3cef70d70409845d688d53f20f7.jpg,http://g.hiphotos.baidu.com/image/h%3D300/sign=b5e4c905865494ee982209191df4e0e1/c2cec3fdfc03924590b2a9b58d94a4c27d1e2500.jpg'},
+  //   url: 'http://localhost:3000/api/product/add',
+  //   success: function (data) {
+  //     console.log(data)
+  //   },
+  //   error: function (e) {
+  //     console.log(e)
+  //   }
+  // })
 
-    // $.ajax({
-    //   type: 'post',
-    //   dataType: 'json',
-    //   // data: {name: 'allen'},
-    //   url: 'http://localhost:3000/api/users/userList',
-    //   success: function (data) {
-    //     console.log(data)
-    //   },
-    //   error: function (e) {
-    //     console.log(e)
-    //   }
-    // })
+
+  /*发邮件*/
+  // $.ajax({
+  //   type: 'post',
+  //   dataType: 'json',
+  //   data: {
+  //     name: '小石头=', // 名字
+  //     email: '17358684442@163.com', // 邮箱
+  //     phone: '17358684442',
+  //     company: '小石', // 公司
+  //     title: '产品咨询', // 标题
+  //     content: 'You can see all ourlatest dynamic news here. Recent company developments, industry market, the latest product development of liquid level gauge, flow meter,', // 正文
+  //   },
+  //   url: 'http://localhost:3000/api/email/send',
+  //   success: function (data) {
+  //     console.log(data)
+  //   },
+  // })
 </script>
 </html>
