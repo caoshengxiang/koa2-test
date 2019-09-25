@@ -6,6 +6,8 @@ const userApi = require('../sql/control/user')
 const chatApi = require('../sql/control/chat')
 const accountApi = require('../sql/control/account')
 const bannerApi = require('../sql/control/banner')
+const productApi = require('../sql/control/product')
+const newsApi = require('../sql/control/news')
 
 // 用户相关
 router.get('/users/getUser', userApi.getUser)
@@ -27,6 +29,20 @@ router.post('/banner/list', bannerApi.bannerList)
 router.post('/banner/add', bannerApi.addBanner)
 router.delete('/banner/delete', bannerApi.removeBanner)
 router.put('/banner/update/:id', bannerApi.updateBanner)
+
+// 产品 相关
+router.get('/product/detail', productApi.detail)
+router.post('/product/list', productApi.list)
+router.post('/product/add', productApi.add)
+router.delete('/product/delete', productApi.remove)
+router.put('/product/update/:id', productApi.update)
+
+// 新闻 相关
+router.get('/product/detail', newsApi.detail)
+router.post('/product/list', newsApi.list)
+router.post('/product/add', newsApi.add)
+router.delete('/product/delete', newsApi.remove)
+router.put('/product/update/:id', newsApi.update)
 
 module.exports = router
 
