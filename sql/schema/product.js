@@ -8,6 +8,7 @@ const productSchema = Schema({
   type: Number, // 分类; 1:
   listImg: String, // 列表图
   detailImgs: String, // 详情图，串用逗号分隔
+  created: Number, // 创建时间戳
 })
 
 module.exports = mongoose.model('Product', productSchema)

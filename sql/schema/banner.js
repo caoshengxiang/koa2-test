@@ -6,6 +6,7 @@ const bannerSchema = Schema({
   url: String, // 图片地址
   link: String, // 跳转链接
   pos: Number, // banner位置; 1:首页
+  created: Number, // 创建时间戳
 })
 
 module.exports = mongoose.model('Banner', bannerSchema)

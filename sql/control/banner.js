@@ -5,11 +5,11 @@ const StatusCode = require('../../config/status_code')
 exports.getBannerDetail = async (ctx, next) => {
   let params = ctx.request.query // get 参数
   await new Promise((resolve, reject) => {
-    Banner.find({ _id: params.id }, function (err, data) {
+    Banner.findById(params.id, function (err, data) {
       if (err) {
         reject(err)
       } else {
-        resolve(data[0])
+        resolve(data)
       }
     })
   }).then((data) => {
@@ -26,16 +26,25 @@ exports.getBannerDetail = async (ctx, next) => {
 }
 
 // 列表
-// obj.find(查询条件,callback(err, data))
+// Model.find(query, fields, options, callback)
 exports.bannerList = async (ctx, next) => {
   await new Promise((resolve, reject) => {
-    let { page = 1, size = 20 } = ctx.request.body // post参数
+    let { page = 1, size = 20, pos } = ctx.request.body // post参数
+    size = parseInt(size, 10)
+    page = parseInt(page, 10) - 1
     console.log(ctx.request.params)
-    Banner.find(reqBody, {
-      limit: size,
-      offset: page * size,
-      sort: {_id: -1}
-    }, function (err, data) { // 加入条件查询
+
+    const query = {}
+    if (pos) {
+      query[pos] = pos
+    }
+    Banner.find(query, {
+      title: 1,
+      url: 1,
+      link: 1,
+      created: 1,
+      pos: 1,
+    }).skip(page * size).limit(size).exec(function (err, data) { // 加入条件查询
       if (err) {
         reject(err)
       } else {
@@ -59,8 +68,9 @@ exports.bannerList = async (ctx, next) => {
 // Model.create(文档数据, callback(err)))
 exports.addBanner = async (ctx, next) => {
   let reqBody = ctx.request.body
+  console.log(reqBody)
   await new Promise((resolve, reject) => {
-    Banner.create(reqBody, function (err) {
+    Banner.create(Object.assign({}, { created: new Date().getTime() }, reqBody), function (err) {
       if (err) {
         reject('写入错误')
       } else {
@@ -91,7 +101,7 @@ exports.removeBanner = async (ctx, next) => {
     }
   }
   await new Promise((resolve, reject) => {
-    Banner.remove({_id: reqBody.id}, function (err) { // 删除
+    Banner.remove({ _id: reqBody.id }, function (err) { // 删除
       if (err) {
         reject(err)
       } else {
@@ -117,7 +127,7 @@ exports.updateBanner = async (ctx, next) => {
   let reqBody = ctx.request.body
   let reqParamsId = ctx.params.id // path 参数
   new Promise((resolve, reject) => {
-    Banner.update({ _id: reqParamsId}, {$set: reqBody}, function(err) { // 这个方法有问题?接口404，但是数据修改成功【找到原因$set中有_id】
+    Banner.update({ _id: reqParamsId }, { $set: reqBody }, function (err) { // 这个方法有问题?接口404，但是数据修改成功【找到原因$set中有_id】
       if (err) {
         console.log('error')
         reject(err)

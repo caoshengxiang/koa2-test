@@ -46,9 +46,6 @@ app.use(api.routes(), api.allowedMethods())
 
 // logger
 app.use(async (ctx, next) => {
-  // ctx.set('Access-Control-Allow-Origin', '*'); // 全局解决cors跨域。也可以在具体control 设置
-  // ctx.set('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
-  // ctx.set('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
     //响应开始时间
     const start = new Date();
     //响应间隔时间
@@ -68,16 +65,5 @@ app.use(async (ctx, next) => {
         logUtil.logError(ctx, error, ms);
     }
 });
-
-// app.use(async (ctx, next)=> {
-//   ctx.set('Access-Control-Allow-Origin', '*');
-//   ctx.set('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
-//   ctx.set('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
-//   if (ctx.method == 'OPTIONS') {
-//     ctx.body = 200;
-//   } else {
-//     await next();
-//   }
-// });
 
 module.exports = app

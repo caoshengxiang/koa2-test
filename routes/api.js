@@ -26,7 +26,7 @@ router.get('/banner/detail', bannerApi.getBannerDetail)
 router.post('/banner/list', bannerApi.bannerList)
 router.post('/banner/add', bannerApi.addBanner)
 router.delete('/banner/delete', bannerApi.removeBanner)
-router.put('/banner/update', bannerApi.updateBanner)
+router.put('/banner/update/:id', bannerApi.updateBanner)
 
 module.exports = router
 
