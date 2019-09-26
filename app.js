@@ -9,6 +9,7 @@ const logger = require('koa-logger')
 
 const index = require('./routes/index')
 const api = require('./routes/api')
+const spider = require('./routes/spider')
 
 // 测试websocket
 // require('./sql/control/websocket')
@@ -43,6 +44,7 @@ app.use(async (ctx, next) => {
 // routes
 app.use(index.routes(), index.allowedMethods())
 app.use(api.routes(), api.allowedMethods())
+app.use(spider.routes(), spider.allowedMethods())
 
 // logger
 app.use(async (ctx, next) => {
