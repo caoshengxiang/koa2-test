@@ -1,4 +1,5 @@
 module.exports = {
-    dbLocal: 'mongodb://106.12.193.173:27017/',
-    dbName: 'test',
+    // dbLocal: 'mongodb://106.12.193.173:27017/', // 个人服务器生产库
+    dbLocal: 'mongodb://localhost:27017/',
+    dbName: 'cosplay',
 }

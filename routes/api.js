@@ -17,6 +17,7 @@ router.get('/users/getUserInfo', userApi.getUserInfo)
 router.post('/users/addUser', userApi.addUser)
 router.post('/users/removeUser', userApi.removeUser)
 router.post('/users/update/:id', userApi.updateUser)
+router.post('/users/login', userApi.login)
 
 // 聊天
 router.post('/chat/list', chatApi.chatList)

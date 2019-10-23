@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>user api</title>
+</head>
+<body>
+
+<div>
+    <button onclick="addUser()">添加用户</button>
+    <button onclick="login()">登录api</button>
+</div>
+<!--<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>-->
+<script src="./jquery-3.2.1.js"></script>
+<script>
+  // $.ajax({
+  //   type: 'get',
+  //   dataType: 'json',
+  //   url: 'http://localhost:3000/api/users/getUser',
+  //   success: function (data) {
+  //     console.log(data)
+  //     $('#name').text(data.username)
+  //   }
+  // })
+  function addUser () {
+    $.ajax({
+      type: 'post',
+      dataType: 'json',
+      url: 'http://localhost:3000/api/users/addUser',
+      data: {
+        name: '小石头',
+        password: '12345678',
+        account: '17358684442',
+        icon: '',
+        age: '',
+        sex: '',
+        created: new Date().getTime(), // 创建时间戳
+        flag: 1,
+      },
+      success: function (data) {
+        console.log(data)
+      }
+    })
+  }
+  function login () {
+    $.ajax({
+      type: 'post',
+      dataType: 'json',
+      url: 'http://localhost:3000/api/users/login',
+      data: {
+        password: '25d55ad283aa400af464c76d713c07ad',
+        account: '17358684442',
+        flag: 1,
+      },
+      success: function (data) {
+        console.log(data)
+      }
+    })
+  }
+</script>
+</body>
+</html>

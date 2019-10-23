@@ -93,13 +93,24 @@ PM2 是一个带有负载均衡功能的 Node 应用的进程管理器。
 
 这是我window下的数据库目录
 ```shell
-E:\workSoft\MongoDB\Server\3.2\bin>mongod --dbpath E:\workSoft\MongoDB\data\db --logpath \data\log
+D:\an\mongodb\bin>mongod --dbpath D:\an\mongodb\data\db --logpath D:\an\mongodb\data\log\mongod.log
 ```
 
+### mongodb可视化
+[介绍一款好用 mongodb 可视化工具](https://cloud.tencent.com/developer/news/334105)
+
+> D:\an\工具\adminMongo  本地运行 `npm start`
+
 ### 开机启动
+
+
 
 ### 启动配置文件
 
 ### 帮助
 
 [socket.io 中文手册](https://www.cnblogs.com/lxxhome/p/5980615.html)
+
+
+# 生产部署
+1.[使用pm2部署node koa2项目并实现自动重启](https://blog.csdn.net/ziwoods/article/details/72833233)

@@ -164,3 +164,36 @@ exports.updateUser = async (ctx, next) => {
     }
   })
 }
+
+// 登录
+// 列表详细
+exports.login = async (ctx, next) => {
+  ctx.set('Access-Control-Allow-Origin', '*'); // * 所有请求，或指定http://localhost:8080
+  let params = ctx.request.body // get 参数
+  console.log(params, '登录参数')
+  await new Promise((resolve, reject) => {
+    User.findOne({account: params.account, password: params.password}, function (err, data) {
+      if (err) {
+        reject(err)
+      } else {
+        if (data) {
+          resolve(data)
+        } else {
+          reject('账号/密码不存在')
+        }
+      }
+    })
+  }).then((data) => {
+    ctx.body = {
+      status: StatusCode.SUCCESS,
+      data: Object.assign({}, data._doc, {authKey: 9099}),
+    }
+  }, (err) => {
+    ctx.body = {
+      status: StatusCode.ERROR,
+      data: {
+        error: err
+      },
+    }
+  })
+}
