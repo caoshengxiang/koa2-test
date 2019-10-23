@@ -70,20 +70,21 @@ exports.jianShuList = async (ctx, next) => {
   let params = ctx.request.query // get 参数
   await new Promise((resolve, reject) => {
     superagent.get('https://www.jianshu.com/')
-      .query('seen_snote_ids%5B%5D=53366789&seen_snote_ids%5B%5D=19243324&seen_snote_ids%5B%5D=33011457&seen_snote_ids%5B%5D=9983984&seen_snote_ids%5B%5D=2398901&seen_snote_ids%5B%5D=22046963&seen_snote_ids%5B%5D=46026324&seen_snote_ids%5B%5D=14089338&seen_snote_ids%5B%5D=3862390&seen_snote_ids%5B%5D=15426969&seen_snote_ids%5B%5D=44818660&seen_snote_ids%5B%5D=52435223&seen_snote_ids%5B%5D=11260741&seen_snote_ids%5B%5D=25673304&seen_snote_ids%5B%5D=36114903&seen_snote_ids%5B%5D=38484201&seen_snote_ids%5B%5D=24621860&seen_snote_ids%5B%5D=10639982&seen_snote_ids%5B%5D=30243940&seen_snote_ids%5B%5D=36784359&seen_snote_ids%5B%5D=33425583&seen_snote_ids%5B%5D=6936677&seen_snote_ids%5B%5D=35378760&seen_snote_ids%5B%5D=3419509&seen_snote_ids%5B%5D=2300302&seen_snote_ids%5B%5D=20317894&seen_snote_ids%5B%5D=47267495&seen_snote_ids%5B%5D=18340804&seen_snote_ids%5B%5D=6594244&seen_snote_ids%5B%5D=7326431&seen_snote_ids%5B%5D=3072350&seen_snote_ids%5B%5D=3686276&seen_snote_ids%5B%5D=6684688&seen_snote_ids%5B%5D=17992051&seen_snote_ids%5B%5D=8305658&seen_snote_ids%5B%5D=16239730&seen_snote_ids%5B%5D=2812281&seen_snote_ids%5B%5D=42986059&seen_snote_ids%5B%5D=25486811&seen_snote_ids%5B%5D=26246830&seen_snote_ids%5B%5D=4753722&page=20')
+      .query('seen_snote_ids%5B%5D=53366789&seen_snote_ids%5B%5D=19243324&seen_snote_ids%5B%5D=33011457&seen_snote_ids%5B%5D=9983984&seen_snote_ids%5B%5D=2398901&seen_snote_ids%5B%5D=22046963&seen_snote_ids%5B%5D=46026324&seen_snote_ids%5B%5D=14089338&seen_snote_ids%5B%5D=3862390&seen_snote_ids%5B%5D=15426969&seen_snote_ids%5B%5D=44818660&seen_snote_ids%5B%5D=52435223&seen_snote_ids%5B%5D=11260741&seen_snote_ids%5B%5D=25673304&seen_snote_ids%5B%5D=36114903&seen_snote_ids%5B%5D=38484201&seen_snote_ids%5B%5D=24621860&seen_snote_ids%5B%5D=10639982&seen_snote_ids%5B%5D=30243940&seen_snote_ids%5B%5D=36784359&seen_snote_ids%5B%5D=33425583&seen_snote_ids%5B%5D=6936677&seen_snote_ids%5B%5D=35378760&seen_snote_ids%5B%5D=3419509&seen_snote_ids%5B%5D=2300302&seen_snote_ids%5B%5D=20317894&seen_snote_ids%5B%5D=47267495&seen_snote_ids%5B%5D=18340804&seen_snote_ids%5B%5D=6594244&seen_snote_ids%5B%5D=7326431&seen_snote_ids%5B%5D=3072350&seen_snote_ids%5B%5D=3686276&seen_snote_ids%5B%5D=6684688&seen_snote_ids%5B%5D=17992051&seen_snote_ids%5B%5D=8305658&seen_snote_ids%5B%5D=16239730&seen_snote_ids%5B%5D=2812281&seen_snote_ids%5B%5D=42986059&seen_snote_ids%5B%5D=25486811&seen_snote_ids%5B%5D=26246830&seen_snote_ids%5B%5D=4753722&page=1')
       .end((err, res) => {
         if (err) {
           // 如果访问失败或者出错，会这行这里
           console.log(`抓取失败 - ${err}`)
           reject(`抓取失败 - ${err}`)
         } else {
-          console.log('抓取成功 ok')
+          console.log('抓取list ok')
 
           let data = jianshuList(res)
-          data.forEach(item => {
-            // articleDetail(item).then(d)
-          })
-          resolve(data)
+          // 循环查询详细接口
+          Promise.all(data.map(item => {return articleDetail(item)})).then((vals => {
+            // console.log(vals)
+            resolve(vals)
+          }))
         }
       })
   }).then((data) => {
@@ -104,12 +105,13 @@ exports.jianShuList = async (ctx, next) => {
         if (err) {
           reject(err)
         } else {
-          let $ = cheerio.load(res.text)
+          let $ = cheerio.load(res.text, {decodeEntities: false})
           let obj = JSON.parse(JSON.stringify(p))
           obj['created'] = $('.s-dsoj').find('time').text()
-          obj['len'] = $('.s-dsoj').find('span').eq(1)
-          obj['read'] = $('.s-dsoj').find('span').eq(2)
+          obj['len'] = $('.s-dsoj').find('span').eq(2).text()
+          obj['read'] = $('.s-dsoj').find('span').eq(3).text()
           obj['content'] = $('._2rhmJa').html()
+          // console.log(obj)
           resolve(obj)
         }
       })
@@ -124,10 +126,10 @@ exports.jianShuList = async (ctx, next) => {
       let d = {
         idx: idx,
         title: $(chiren[0]).text(),
-        link: 'https://www.jianshu.com/' + $(chiren[0]).attr('href'),
+        link: 'https://www.jianshu.com' + $(chiren[0]).attr('href'),
         intro: $(chiren[1]).text(),
         author: $(chiren[2]).find('.nickname').text(),
-        authorLink: $(chiren[2]).find('.nickname').attr('href'),
+        authorLink: 'https://www.jianshu.com' + $(chiren[2]).find('.nickname').attr('href'),
         like: $(chiren[2]).find('span').eq(1).text(),
         money: $(chiren[2]).find('span').eq(2).text()
       }
