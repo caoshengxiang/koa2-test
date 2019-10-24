@@ -1,11 +1,11 @@
-const News = require('../schema/news')
+const Params = require('../schema/params')
 const StatusCode = require('../../config/status_code')
 
 // 详细
 exports.detail = async (ctx, next) => {
   let params = ctx.request.query // get 参数
   await new Promise((resolve, reject) => {
-    News.findById(params._id, function (err, data) {
+    Params.findById(params._id, function (err, data) {
       if (err) {
         reject(err)
       } else {
@@ -31,16 +31,18 @@ exports.detail = async (ctx, next) => {
 // Model.find(query, fields, options, callback)
 exports.list = async (ctx, next) => {
   await new Promise((resolve, reject) => {
-    let { page = 1, size = 20, title } = ctx.request.query // get参数
+    let { page = 1, size = 20, flag } = ctx.request.query // get参数
     size = parseInt(size, 10)
     page = parseInt(page, 10) - 1
     console.log(ctx.request.params)
 
     const query = {}
-    if (title) {
-      query['title'] = {$regex: title}
+
+    if (flag) {
+      query['flag'] = flag
     }
-    News.find(query).skip(page * size).limit(size).exec(function (err, data) { // 加入条件查询
+
+    Params.find(query).skip(page * size).limit(size).exec(function (err, data) { // 加入条件查询
       if (err) {
         reject(err)
       } else {
@@ -71,7 +73,7 @@ exports.add = async (ctx, next) => {
   let reqBody = ctx.request.body
   console.log(reqBody)
   await new Promise((resolve, reject) => {
-    News.create(Object.assign({}, {
+    Params.create(Object.assign({}, {
       created: new Date().getTime(),
       pv: 0
     }, reqBody), function (err) {
@@ -109,7 +111,7 @@ exports.remove = async (ctx, next) => {
     }
   }
   await new Promise((resolve, reject) => {
-    News.remove({ _id: reqBody._id }, function (err) { // 删除
+    Params.remove({ _id: reqBody._id }, function (err) { // 删除
       if (err) {
         reject(err)
       } else {
@@ -140,7 +142,7 @@ exports.update = async (ctx, next) => {
     if (!reqParamsId) { // 没有reject 或者resolve 就会404 ？？？？
       reject('修改错误，id不存在')
     }
-    News.update({ _id: reqParamsId }, { $set: reqBody }, function (err) { // 这个方法有问题?接口404，但是数据修改成功【找到原因$set中有_id】
+    Params.update({ _id: reqParamsId }, { $set: reqBody }, function (err) { // 这个方法有问题?接口404，但是数据修改成功【找到原因$set中有_id】
       if (err) {
         console.log('error')
         reject(err)

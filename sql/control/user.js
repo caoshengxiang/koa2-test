@@ -44,7 +44,9 @@ exports.userList = async (ctx, next) => {
   }, (err) => {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: err,
+      data: {
+        error: err
+      },
     }
   })
 }
@@ -70,7 +72,9 @@ exports.getUserInfo = async (ctx, next) => {
   }, (err) => {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: err,
+      data: {
+        error: err
+      },
     }
   })
 }
@@ -96,7 +100,9 @@ exports.addUser = async (ctx, next) => {
   }, (err) => {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: err,
+      data: {
+        error: err
+      },
     }
   })
 }
@@ -109,7 +115,9 @@ exports.removeUser = async (ctx, next) => {
   if (!reqBody.id) {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: '用户名，参数为空',
+      data: {
+        error: '用户名，参数为空'
+      },
     }
   }
   await new Promise((resolve, reject) => {
@@ -128,7 +136,9 @@ exports.removeUser = async (ctx, next) => {
   }, (err) => {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: err,
+      data: {
+        error: err
+      },
     }
   })
 }
@@ -160,7 +170,9 @@ exports.updateUser = async (ctx, next) => {
   }, (err) => {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: err
+      data: {
+        error: err
+      },
     }
   })
 }

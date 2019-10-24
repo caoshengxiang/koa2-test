@@ -2,10 +2,10 @@ const Banner = require('../schema/banner')
 const StatusCode = require('../../config/status_code')
 
 // 详细
-exports.getBannerDetail = async (ctx, next) => {
+exports.detail = async (ctx, next) => {
   let params = ctx.request.query // get 参数
   await new Promise((resolve, reject) => {
-    Banner.findById(params.id, function (err, data) {
+    Banner.findById(params._id, function (err, data) {
       if (err) {
         reject(err)
       } else {
@@ -20,31 +20,32 @@ exports.getBannerDetail = async (ctx, next) => {
   }, (err) => {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: err,
+      data: {
+        error: err
+      },
     }
   })
 }
 
 // 列表
 // Model.find(query, fields, options, callback)
-exports.bannerList = async (ctx, next) => {
+exports.list = async (ctx, next) => {
   await new Promise((resolve, reject) => {
-    let { page = 1, size = 20, pos } = ctx.request.body // post参数
+    let { page = 1, size = 20, flag, title} = ctx.request.query // get参数
     size = parseInt(size, 10)
-    page = parseInt(page, 10) - 1
+    page = parseInt(page, 10) - 1 // 注意重0开始
     console.log(ctx.request.params)
 
     const query = {}
-    if (pos) {
-      query[pos] = pos
+
+    if (title) {
+      query['title'] = {$regex: title}
     }
-    Banner.find(query, {
-      title: 1,
-      url: 1,
-      link: 1,
-      created: 1,
-      pos: 1,
-    }).skip(page * size).limit(size).exec(function (err, data) { // 加入条件查询
+    if (flag) {
+      query['flag'] = flag
+    }
+
+    Banner.find(query).skip(page * size).limit(size).exec(function (err, data) { // 加入条件查询
       if (err) {
         reject(err)
       } else {
@@ -54,23 +55,31 @@ exports.bannerList = async (ctx, next) => {
   }).then((data) => {
     ctx.body = {
       status: StatusCode.SUCCESS,
-      data: data,
+      data: {
+        data: data,
+        total: 0 // todo
+      },
     }
   }, (err) => {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: err,
+      data: {
+        error: err
+      },
     }
   })
 }
 
 // 添加
 // Model.create(文档数据, callback(err)))
-exports.addBanner = async (ctx, next) => {
+exports.add = async (ctx, next) => {
   let reqBody = ctx.request.body
   console.log(reqBody)
   await new Promise((resolve, reject) => {
-    Banner.create(Object.assign({}, { created: new Date().getTime() }, reqBody), function (err) {
+    Banner.create(Object.assign({}, {
+      created: new Date().getTime(),
+      pv: 0, // 浏览量初始为0
+    }, reqBody), function (err) {
       if (err) {
         reject('写入错误')
       } else {
@@ -85,23 +94,25 @@ exports.addBanner = async (ctx, next) => {
   }, (err) => {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: err,
+      data: {
+        error: err
+      },
     }
   })
 }
 
 // 删除用户
 // obj.remove(查询条件,callback(err))
-exports.removeBanner = async (ctx, next) => {
+exports.remove = async (ctx, next) => {
   let reqBody = ctx.request.query
-  if (!reqBody.id) {
+  if (!reqBody._id) {
     ctx.body = {
       status: StatusCode.ERROR,
       data: 'id，参数为空',
     }
   }
   await new Promise((resolve, reject) => {
-    Banner.remove({ _id: reqBody.id }, function (err) { // 删除
+    Banner.remove({ _id: reqBody._id }, function (err) { // 删除
       if (err) {
         reject(err)
       } else {
@@ -116,29 +127,58 @@ exports.removeBanner = async (ctx, next) => {
   }, (err) => {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: err,
+      data: {
+        error: err
+      },
     }
   })
 }
 
 // 更新
 // obj.update(查询条件,更新对象,callback(err))
-exports.updateBanner = async (ctx, next) => {
+exports.update = async (ctx, next) => {
   let reqBody = ctx.request.body
+  if (reqBody._id) {
+    delete reqBody._id
+    delete reqBody.__v
+  }
+  // let p = {
+  //   title,
+  //   sub,
+  //   content,
+  //   productCateName,
+  //   listImg,
+  //   detailImgs,
+  //   created,
+  //   weight,
+  //   status,
+  //   pv
+  // } = reqBody
+  // console.log('参数-----------')
+  // console.log(p)
   let reqParamsId = ctx.params.id // path 参数
   new Promise((resolve, reject) => {
+    if (!reqParamsId) { // 没有reject 或者resolve 就会404 ？？？？
+      reject('修改错误，id不存在')
+    }
     Banner.update({ _id: reqParamsId }, { $set: reqBody }, function (err) { // 这个方法有问题?接口404，但是数据修改成功【找到原因$set中有_id】
       if (err) {
         console.log('error')
         reject(err)
       } else {
-        console.log('succ', reqParamsId)
+        console.log('更新成功', reqParamsId)
         resolve('更新成功')
       }
     })
-    if (!reqBody.id) { // 没有reject 或者resolve 就会404 ？？？？
-      resolve('修改错误，id不存在')
-    }
+    // Banner.findByIdAndUpdate(reqParamsId, p, function (err) { // 这个方法有问题?接口404，但是数据修改成功【找到原因$set中有_id】
+    //   if (err) {
+    //     console.log('error')
+    //     reject(err)
+    //   } else {
+    //     console.log('更新成功2', reqParamsId)
+    //     resolve('更新成功')
+    //   }
+    // })
   }).then((data) => {
     ctx.body = {
       status: StatusCode.SUCCESS,
@@ -147,7 +187,9 @@ exports.updateBanner = async (ctx, next) => {
   }, (err) => {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: err
+      data: {
+        error: err
+      },
     }
   })
 }

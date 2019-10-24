@@ -9,6 +9,8 @@ const bannerApi = require('../sql/control/banner')
 const productApi = require('../sql/control/product')
 const newsApi = require('../sql/control/news')
 const emailApi = require('../sql/control/email')
+const faqsApi = require('../sql/control/faqs')
+const paramsApi = require('../sql/control/params')
 
 // 用户相关
 router.get('/users/getUser', userApi.getUser)
@@ -26,33 +28,47 @@ router.post('/chat/list', chatApi.chatList)
 router.post('/user/login', accountApi.userLogin)
 
 // banner 相关
-router.get('/banner/detail', bannerApi.getBannerDetail)
-router.post('/banner/list', bannerApi.bannerList)
-router.post('/banner/add', bannerApi.addBanner)
-router.delete('/banner/delete', bannerApi.removeBanner)
-router.put('/banner/update/:id', bannerApi.updateBanner)
+router.get('/banner/detail', bannerApi.detail)
+router.get('/banner/list', bannerApi.list)
+router.post('/banner/add', bannerApi.add)
+router.delete('/banner/delete', bannerApi.remove)
+router.put('/banner/update/:id', bannerApi.update)
 
 // 产品 相关
 router.get('/product/detail', productApi.detail)
-router.post('/product/list', productApi.list)
+router.get('/product/list', productApi.list)
 router.post('/product/add', productApi.add)
 router.delete('/product/delete', productApi.remove)
 router.put('/product/update/:id', productApi.update)
 
 // 新闻 相关
-router.get('/product/detail', newsApi.detail)
-router.post('/product/list', newsApi.list)
-router.post('/product/add', newsApi.add)
-router.delete('/product/delete', newsApi.remove)
-router.put('/product/update/:id', newsApi.update)
+router.get('/news/detail', newsApi.detail)
+router.get('/news/list', newsApi.list)
+router.post('/news/add', newsApi.add)
+router.delete('/news/delete', newsApi.remove)
+router.put('/news/update/:id', newsApi.update)
+
+// 问题 相关
+router.get('/faqs/detail', faqsApi.detail)
+router.get('/faqs/list', faqsApi.list)
+router.post('/faqs/add', faqsApi.add)
+router.delete('/faqs/delete', faqsApi.remove)
+router.put('/faqs/update/:id', faqsApi.update)
 
 // 邮件 相关
 router.get('/email/detail', emailApi.detail)
-router.post('/email/list', emailApi.list)
+router.get('/email/list', emailApi.list)
 router.post('/email/add', emailApi.add)
 router.delete('/email/delete', emailApi.remove)
 router.put('/email/update/:id', emailApi.update)
 router.post('/email/send', emailApi.send)
+
+// 参数 相关
+router.get('/params/detail', paramsApi.detail)
+router.get('/params/list', paramsApi.list)
+router.post('/params/add', paramsApi.add)
+router.delete('/params/delete', paramsApi.remove)
+router.put('/params/update/:id', paramsApi.update)
 
 module.exports = router
 

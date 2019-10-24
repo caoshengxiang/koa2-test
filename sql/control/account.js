@@ -24,7 +24,9 @@ exports.userLogin = async (ctx, next) => {
   }, (err) => {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: err,
+      data: {
+        error: err
+      },
     }
   })
 }

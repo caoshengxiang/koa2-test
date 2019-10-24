@@ -6,7 +6,7 @@ const newSchema = Schema({
   sub: String, // 简介
   content: String, // 详细介绍，富文本
   type: Number, // 分类; 1:
-  listImg: String, // 列表图
+  // listImg: String, // 列表图
   created: Number, // 创建时间戳
   status: Number, // 状态【1:上线,2:下载】
   weight: Number, // 权重

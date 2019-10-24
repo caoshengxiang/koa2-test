@@ -23,7 +23,9 @@ exports.detail = async (ctx, next) => {
   }, (err) => {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: err,
+      data: {
+        error: err
+      },
     }
   })
 }
@@ -32,7 +34,7 @@ exports.detail = async (ctx, next) => {
 // Model.find(query, fields, options, callback)
 exports.list = async (ctx, next) => {
   await new Promise((resolve, reject) => {
-    let { page = 1, size = 20, pos } = ctx.request.body // post参数
+    let { page = 1, size = 20, pos } =  ctx.request.query // get参数
     size = parseInt(size, 10)
     page = parseInt(page, 10) - 1
     console.log(ctx.request.params)
@@ -53,7 +55,9 @@ exports.list = async (ctx, next) => {
   }, (err) => {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: err,
+      data: {
+        error: err
+      },
     }
   })
 }
@@ -79,7 +83,9 @@ exports.add = async (ctx, next) => {
   }, (err) => {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: err,
+      data: {
+        error: err
+      },
     }
   })
 }
@@ -91,7 +97,9 @@ exports.remove = async (ctx, next) => {
   if (!reqBody.id) {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: 'id，参数为空',
+      data: {
+        error: 'id，参数为空'
+      },
     }
   }
   await new Promise((resolve, reject) => {
@@ -110,7 +118,9 @@ exports.remove = async (ctx, next) => {
   }, (err) => {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: err,
+      data: {
+        error: err
+      },
     }
   })
 }
@@ -141,7 +151,9 @@ exports.update = async (ctx, next) => {
   }, (err) => {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: err
+      data: {
+        error: err
+      },
     }
   })
 }
@@ -193,7 +205,9 @@ exports.send = async (ctx, next) => {
   }, (err) => {
     ctx.body = {
       status: StatusCode.ERROR,
-      data: err,
+      data: {
+        error: err
+      },
     }
   })
 }
