@@ -34,18 +34,30 @@ exports.detail = async (ctx, next) => {
 // Model.find(query, fields, options, callback)
 exports.list = async (ctx, next) => {
   await new Promise((resolve, reject) => {
-    let { page = 1, size = 20, pos } =  ctx.request.query // get参数
+    let { page = 1, size = 20, pos } = ctx.request.query // get参数
     size = parseInt(size, 10)
     page = parseInt(page, 10) - 1
     console.log(ctx.request.params)
 
     const query = {}
-    Email.find(query).skip(page * size).limit(size).exec(function (err, data) { // 加入条件查询
-      if (err) {
-        reject(err)
-      } else {
-        resolve(data)
-      }
+
+    Email.count(query, (err, count) => {
+      Email.find(query)
+        .skip(page * size)
+        .limit(size)
+        .sort({
+          '_id': -1,
+        })
+        .exec(function (err, data) { // 加入条件查询
+        if (err) {
+          reject(err)
+        } else {
+          resolve({
+            data: data,
+            total: count
+          })
+        }
+      })
     })
   }).then((data) => {
     ctx.body = {
@@ -103,7 +115,7 @@ exports.remove = async (ctx, next) => {
     }
   }
   await new Promise((resolve, reject) => {
-    Email.remove({ _id: reqBody.id }, function (err) { // 删除
+    Email.remove({ _id: reqBody._id }, function (err) { // 删除
       if (err) {
         reject(err)
       } else {
@@ -168,13 +180,13 @@ exports.send = async (ctx, next) => {
             <p>邮箱: ${reqBody.email}</p>
             <p>电话：${reqBody.phone}</p>
             <p>公司：${reqBody.company}</p>
-            <p>标题：${reqBody.title}</p>
+            <p>标题：${reqBody.subject}</p>
             <p>内容：${reqBody.content}</p>
             `
   let mailOptions = {
-    from: emailConfig.auth.user, // sender address
+    from: emailConfig.auth.user, // sender address 发送者必须配置的账号
     to: emailConfig.auth.user, // list of receivers
-    subject: '客户联系提醒---' + reqBody.title, // Subject line
+    subject: '客户联系提醒---' + reqBody.subject, // Subject line
     // text: 'Hello world ?', // plaintext body
     html: html // html body
   }

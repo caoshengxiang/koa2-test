@@ -42,20 +42,28 @@ exports.list = async (ctx, next) => {
       query['flag'] = flag
     }
 
-    Params.find(query).skip(page * size).limit(size).exec(function (err, data) { // 加入条件查询
-      if (err) {
-        reject(err)
-      } else {
-        resolve(data)
-      }
+    Params.count(query, (err, count) => {
+      Params.find(query)
+        .skip(page * size)
+        .limit(size)
+        .sort({
+          '_id': -1,
+        })
+        .exec(function (err, data) { // 加入条件查询
+          if (err) {
+            reject(err)
+          } else {
+            resolve({
+              data: data,
+              total: count
+            })
+          }
+        })
     })
   }).then((data) => {
     ctx.body = {
       status: StatusCode.SUCCESS,
-      data: {
-        data: data,
-        total: 0 // todo
-      },
+      data: data,
     }
   }, (err) => {
     ctx.body = {

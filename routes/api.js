@@ -11,6 +11,10 @@ const newsApi = require('../sql/control/news')
 const emailApi = require('../sql/control/email')
 const faqsApi = require('../sql/control/faqs')
 const paramsApi = require('../sql/control/params')
+const commonApi = require('../sql/control/common')
+
+// 通用性接口
+router.post('/common/upload', commonApi.uploadConfig.single('file'), commonApi.upload)
 
 // 用户相关
 router.get('/users/getUser', userApi.getUser)

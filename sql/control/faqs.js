@@ -31,27 +31,39 @@ exports.detail = async (ctx, next) => {
 // Model.find(query, fields, options, callback)
 exports.list = async (ctx, next) => {
   await new Promise((resolve, reject) => {
-    let { page = 1, size = 20} = ctx.request.query // get参数
+    let { page = 1, size = 20, status } = ctx.request.query // get参数
     size = parseInt(size, 10)
     page = parseInt(page, 10) - 1 // 注意重0开始
     console.log(ctx.request.params)
 
     const query = {}
+    if (status) {
+      query['status'] = status
+    }
 
-    Faqs.find(query).skip(page * size).limit(size).exec(function (err, data) { // 加入条件查询
-      if (err) {
-        reject(err)
-      } else {
-        resolve(data)
-      }
+    Faqs.count(query, (err, count) => {
+      Faqs.find(query)
+        .skip(page * size)
+        .limit(size)
+        .sort({
+          weight: -1,
+          '_id': -1,
+        })
+        .exec(function (err, data) { // 加入条件查询
+          if (err) {
+            reject(err)
+          } else {
+            resolve({
+              data: data,
+              total: count
+            })
+          }
+        })
     })
   }).then((data) => {
     ctx.body = {
       status: StatusCode.SUCCESS,
-      data: {
-        data: data,
-        total: 0 // todo
-      },
+      data: data,
     }
   }, (err) => {
     ctx.body = {
