@@ -150,54 +150,59 @@ exports.update = async (ctx, next) => {
     delete reqBody._id
     delete reqBody.__v
   }
-  // let p = {
-  //   title,
-  //   sub,
-  //   content,
-  //   productCateName,
-  //   listImg,
-  //   detailImgs,
-  //   created,
-  //   weight,
-  //   status,
-  //   pv
-  // } = reqBody
-  // console.log('参数-----------')
-  // console.log(p)
+
   let reqParamsId = ctx.params.id // path 参数
-  new Promise((resolve, reject) => {
-    if (!reqParamsId) { // 没有reject 或者resolve 就会404 ？？？？
-      reject('修改错误，id不存在')
-    }
-    Banner.update({ _id: reqParamsId }, { $set: reqBody }, function (err) { // 这个方法有问题?接口404，但是数据修改成功【找到原因$set中有_id】
-      if (err) {
-        console.log('error')
-        reject(err)
-      } else {
-        console.log('更新成功', reqParamsId)
-        resolve('更新成功')
-      }
-    })
-    // Banner.findByIdAndUpdate(reqParamsId, p, function (err) { // 这个方法有问题?接口404，但是数据修改成功【找到原因$set中有_id】
-    //   if (err) {
-    //     console.log('error')
-    //     reject(err)
-    //   } else {
-    //     console.log('更新成功2', reqParamsId)
-    //     resolve('更新成功')
-    //   }
-    // })
-  }).then((data) => {
+
+  let doc = await Banner.update({ _id: reqParamsId }, reqBody)
+
+  if (doc.nModified && doc.nModified > 0) {
     ctx.body = {
       status: StatusCode.SUCCESS,
-      data: data
+      data: doc
     }
-  }, (err) => {
+  } else {
     ctx.body = {
       status: StatusCode.ERROR,
       data: {
-        error: err
+        error: '未更新任何内容！',
+        result: doc
       },
     }
-  })
+  }
+
+  // new Promise((resolve, reject) => {
+  //   if (!reqParamsId) { // 没有reject 或者resolve 就会404 ？？？？
+  //     reject('修改错误，id不存在')
+  //   }
+  //   Banner.update({ _id: reqParamsId }, { $set: reqBody }, function (err) { // 这个方法有问题?接口404，但是数据修改成功【找到原因$set中有_id】
+  //     if (err) {
+  //       console.log('error')
+  //       reject(err)
+  //     } else {
+  //       console.log('更新成功', reqParamsId)
+  //       resolve('更新成功')
+  //     }
+  //   })
+  //   // Banner.findByIdAndUpdate(reqParamsId, p, function (err) { // 这个方法有问题?接口404，但是数据修改成功【找到原因$set中有_id】
+  //   //   if (err) {
+  //   //     console.log('error')
+  //   //     reject(err)
+  //   //   } else {
+  //   //     console.log('更新成功2', reqParamsId)
+  //   //     resolve('更新成功')
+  //   //   }
+  //   // })
+  // }).then((data) => {
+  //   ctx.body = {
+  //     status: StatusCode.SUCCESS,
+  //     data: data
+  //   }
+  // }, (err) => {
+  //   ctx.body = {
+  //     status: StatusCode.ERROR,
+  //     data: {
+  //       error: err
+  //     },
+  //   }
+  // })
 }

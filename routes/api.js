@@ -4,7 +4,6 @@ router.prefix('/api') // 接口在api/下，如：http://localhost:3000/api/user
 
 const userApi = require('../sql/control/user')
 const chatApi = require('../sql/control/chat')
-const accountApi = require('../sql/control/account')
 const bannerApi = require('../sql/control/banner')
 const productApi = require('../sql/control/product')
 const newsApi = require('../sql/control/news')
@@ -27,9 +26,6 @@ router.post('/users/login', userApi.login)
 
 // 聊天
 router.post('/chat/list', chatApi.chatList)
-
-// 登录
-router.post('/user/login', accountApi.userLogin)
 
 // banner 相关
 router.get('/banner/detail', bannerApi.detail)
