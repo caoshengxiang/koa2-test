@@ -1,9 +1,10 @@
 const User = require('../schema/user')
 const StatusCode = require('../../config/status_code')
+const addtoken = require('../../utils/token/addtoken');
 
 // 用户详细
 exports.getUser = async (ctx, next) => {
-  ctx.set('Access-Control-Allow-Origin', '*'); // * 所有请求，或指定http://localhost:8080
+  ctx.set('Access-Control-Allow-Origin', '*') // * 所有请求，或指定http://localhost:8080
   ctx.body = {
     status: 'success',
     data: {
@@ -33,7 +34,7 @@ exports.userList = async (ctx, next) => {
         // } else {
         //   resolve(data)
         // }
-          resolve(data)
+        resolve(data)
       }
     })
   }).then((data) => {
@@ -53,11 +54,11 @@ exports.userList = async (ctx, next) => {
 
 // 列表详细
 exports.getUserInfo = async (ctx, next) => {
-  ctx.set('Access-Control-Allow-Origin', '*'); // * 所有请求，或指定http://localhost:8080
+  ctx.set('Access-Control-Allow-Origin', '*') // * 所有请求，或指定http://localhost:8080
   let params = ctx.request.query // get 参数
   console.log(params, 'allen')
   await new Promise((resolve, reject) => {
-    User.find({_id: params.id}, function (err, data) {
+    User.find({ _id: params.id }, function (err, data) {
       if (err) {
         reject(err)
       } else {
@@ -121,7 +122,7 @@ exports.removeUser = async (ctx, next) => {
     }
   }
   await new Promise((resolve, reject) => {
-    User.remove({_id: reqBody.id}, function (err) { // 删除
+    User.remove({ _id: reqBody.id }, function (err) { // 删除
       if (err) {
         reject(err)
       } else {
@@ -148,7 +149,11 @@ exports.removeUser = async (ctx, next) => {
 exports.updateUser = async (ctx, next) => {
   let reqBody = ctx.request.body
   ctx.set('Access-Control-Allow-Origin', '*')
-
+  if (reqBody._id) {
+    delete reqBody._id
+    delete reqBody.__v
+    delete reqBody.password // 安全考虑，不能直接通过编辑接口修改密码
+  }
   let reqParamsId = ctx.params.id // path 参数
 
   let doc = await User.update({ _id: reqParamsId }, reqBody)
@@ -197,27 +202,29 @@ exports.updateUser = async (ctx, next) => {
 }
 
 // 登录
-// 列表详细
 exports.login = async (ctx, next) => {
-  ctx.set('Access-Control-Allow-Origin', '*'); // * 所有请求，或指定http://localhost:8080
-  let params = ctx.request.body // get 参数
-  console.log(params, '登录参数')
+  ctx.set('Access-Control-Allow-Origin', '*') // * 所有请求，或指定http://localhost:8080
+  let params = ctx.request.body // post 参数
+  // console.log(params, '登录参数')
   await new Promise((resolve, reject) => {
-    User.findOne({account: params.account, password: params.password}, function (err, data) {
+    // 去除password 字段返回
+    User.findOne({ account: params.account, password: params.password }, {password: 0},  function (err, data) {
       if (err) {
         reject(err)
       } else {
         if (data) {
           resolve(data)
         } else {
-          reject('账号/密码不存在')
+          reject('账号/密码错误')
         }
       }
     })
   }).then((data) => {
     ctx.body = {
       status: StatusCode.SUCCESS,
-      data: Object.assign({}, data._doc, {authKey: 9099}),
+      data: Object.assign({}, data._doc, {
+        authKey: addtoken({_id: data._id, time: new Date().getTime()})
+      }),
     }
   }, (err) => {
     ctx.body = {
@@ -227,4 +234,27 @@ exports.login = async (ctx, next) => {
       },
     }
   })
+}
+
+// 更新
+// obj.update(查询条件,更新对象,callback(err))
+exports.updatePassword = async (ctx, next) => {
+  let reqBody = ctx.request.body
+
+  let doc = await User.update({ account: reqBody.account, password: reqBody.password}, {password: reqBody.newPassword})
+
+  if (doc.nModified && doc.nModified > 0) {
+    ctx.body = {
+      status: StatusCode.SUCCESS,
+      data: doc
+    }
+  } else {
+    ctx.body = {
+      status: StatusCode.ERROR,
+      data: {
+        error: '修改密码失败！原密码错误/与原密码一致',
+        result: doc
+      },
+    }
+  }
 }

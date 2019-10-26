@@ -142,6 +142,7 @@ exports.remove = async (ctx, next) => {
 // 更新
 // obj.update(查询条件,更新对象,callback(err))
 exports.update = async (ctx, next) => {
+  // console.log(res)
   let reqBody = ctx.request.body
   if (reqBody._id) {
     delete reqBody._id
@@ -157,16 +158,14 @@ exports.update = async (ctx, next) => {
       data: doc
     }
   } else {
-      ctx.body = {
-        status: StatusCode.ERROR,
-        data: {
-          error: '未更新任何内容！',
-          result: doc
-        },
-      }
+    ctx.body = {
+      status: StatusCode.ERROR,
+      data: {
+        error: '未更新任何内容！',
+        result: doc
+      },
+    }
   }
-
-
   // new Promise((resolve, reject) => {
   //   if (!reqParamsId) { // 没有reject 或者resolve 就会404 ？？？？
   //     reject('修改错误，id不存在')

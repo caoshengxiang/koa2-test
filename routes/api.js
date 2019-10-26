@@ -21,8 +21,11 @@ router.post('/users/userList', userApi.userList)
 router.get('/users/getUserInfo', userApi.getUserInfo)
 router.post('/users/addUser', userApi.addUser)
 router.post('/users/removeUser', userApi.removeUser)
-router.post('/users/update/:id', userApi.updateUser)
+router.put('/users/update/:id', userApi.updateUser)
 router.post('/users/login', userApi.login)
+router.post('/users/update/pass', userApi.updatePassword)
+// router.put('/users/update/pass', userApi.updatePassword) // 报错信息如下，改post
+//  CastError: Cast to ObjectId failed for value "pass" at path "_id" for model "User"
 
 // 聊天
 router.post('/chat/list', chatApi.chatList)
