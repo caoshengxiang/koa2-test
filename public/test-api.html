@@ -11,7 +11,8 @@
 </style>
 <body>
 <p>jquery cors test</p>
-<p id="userName"></p>
+
+<button onclick="addUser()">添加用户</button>
 
 </body>
 <script src="static/jquery-3.2.1.js"></script>
@@ -48,7 +49,6 @@
   //   }
   // })
 
-
   /*发邮件*/
   // $.ajax({
   //   type: 'post',
@@ -66,5 +66,31 @@
   //     console.log(data)
   //   },
   // })
+
+  /*添加用户*/
+  function addUser () {
+    $.ajax({
+      type: 'post',
+      dataType: 'json',
+      data: {
+        'name': '小石头',
+        'password': '25d55ad283aa400af464c76d713c07ad',
+        'account': '17358684442',
+        'icon': '',
+        'age': 27,
+        'sex': '男',
+        'created': 1572255356374,
+        'flag': 1
+      },
+      url: 'http://localhost:3000/api/users/addUser',
+      success: function (data) {
+        console.log(data)
+        alert('添加成功')
+      },
+      error: function (e) {
+        console.log(e)
+      }
+    })
+  }
 </script>
 </html>

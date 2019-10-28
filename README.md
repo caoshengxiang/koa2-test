@@ -114,3 +114,13 @@ D:\an\mongodb\bin>mongod --dbpath D:\an\mongodb\data\db --logpath D:\an\mongodb\
 
 # 生产部署
 1.[使用pm2部署node koa2项目并实现自动重启](https://blog.csdn.net/ziwoods/article/details/72833233)
+
+
+
+# 服务器启动
+
+##  mongodb
+  1. 启用 `./mongod --config mongodb.conf`  
+  [参考链接](https://www.cnblogs.com/ontoweb-zp/p/7670694.html)
+
+## 启动nginx
