@@ -67,7 +67,7 @@ app.use(async (ctx, next) => {
 app.use(async (ctx, next) => { // 登录验证拦截
   console.log(ctx.url)
   let url = ctx.originalUrl
-  if (url.indexOf('/update') > -1 || url.indexOf('/add') > -1) { // 包含update说明是编辑接口
+  if (url.indexOf('/update') > -1 || url.indexOf('/add') > -1 || url.indexOf('/remove') > -1 || url.indexOf('/delete') > -1) { // 包含update说明是编辑接口
     let token = ctx.request.header.authkey;
 
     if (!token) {

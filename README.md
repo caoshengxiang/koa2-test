@@ -130,3 +130,6 @@ D:\an\mongodb\bin>mongod --dbpath D:\an\mongodb\data\db --logpath D:\an\mongodb\
  1. 注意切换分支
  2. 安装依赖包
  3. 注意是否有上传目录  /public/uploads ,没有uploads目录就新建
+ 
+## 更新
+ 1. `cd koa2-test`    执行 `git pull`     pm2 使用了--watch 参数会自动检测变化重启
