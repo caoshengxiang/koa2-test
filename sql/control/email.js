@@ -1,7 +1,7 @@
 const Email = require('../schema/email')
 const StatusCode = require('../../config/status_code')
 const nodemailer = require('nodemailer')
-const emailConfig = require('../../utils/emailConfig')
+const emailConfig = require('../../config/email_config')
 const transporter = nodemailer.createTransport(emailConfig)
 
 // 详细
