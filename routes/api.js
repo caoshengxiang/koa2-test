@@ -13,7 +13,8 @@ const paramsApi = require('../sql/control/params')
 const commonApi = require('../sql/control/common')
 
 // 通用性接口
-router.post('/common/upload', commonApi.uploadConfig.single('file'), commonApi.upload)
+// router.post('/common/upload', commonApi.uploadConfig.single('file'), commonApi.upload)
+router.post('/common/upload', commonApi.upload2)
 router.post('/common/upload/cos', commonApi.uploadOs)
 
 // 用户相关

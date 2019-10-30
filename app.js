@@ -4,7 +4,9 @@ const app = new Koa()
 const views = require('koa-views')
 const json = require('koa-json')
 const onerror = require('koa-onerror')
-const bodyparser = require('koa-bodyparser')
+// const bodyparser = require('koa-bodyparser')
+const koaBody = require('koa-body')
+const path = require('path')
 const logger = require('koa-logger')
 const StatusCode = require('./config/status_code')
 const decodeToken = require('./utils/token/decodeToken')
@@ -22,9 +24,25 @@ const logUtil = require('./utils/log_util')
 onerror(app)
 
 // middlewares
-app.use(bodyparser({
-  enableTypes:['json', 'form', 'text']
+// app.use(bodyparser({
+//   enableTypes:['json', 'form', 'text']
+// }))
+
+
+/* post请求报错405， 是因为和bodyparser冲突，把bodyparser 全注释 */
+app.use(koaBody({
+  multipart: true, // 支持文件上传
+  // encoding:'gzip', // 也会报错204
+  formidable: {
+    keepExtensions: true,    // 保持文件的后缀
+    maxFileSize: 20*1024*1024,    // 设置上传文件大小最大限制，默认2M
+    onFileBegin:(name,file) => { // 文件上传前的设置
+      // console.log(`name: ${name}`);
+      // console.log(file);
+    },
+  }
 }))
+
 app.use(json())
 app.use(logger())
 app.use(require('koa-static')(__dirname + '/public'))
