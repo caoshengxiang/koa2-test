@@ -9,6 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "cos-nodejs-sdk-v5": "^2.5.12",
     "debug": "^2.6.9",
     "ejs": "~2.3.3",
     "jsonwebtoken": "^8.5.1",

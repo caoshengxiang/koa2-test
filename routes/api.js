@@ -14,6 +14,7 @@ const commonApi = require('../sql/control/common')
 
 // 通用性接口
 router.post('/common/upload', commonApi.uploadConfig.single('file'), commonApi.upload)
+router.post('/common/upload/cos', commonApi.uploadOs)
 
 // 用户相关
 router.get('/users/getUser', userApi.getUser)
