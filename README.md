@@ -133,3 +133,44 @@ D:\an\mongodb\bin>mongod --dbpath D:\an\mongodb\data\db --logpath D:\an\mongodb\
  
 ## 更新
  1. `cd koa2-test`    执行 `git pull`     pm2 使用了--watch 参数会自动检测变化重启
+
+
+## 服务器安装配置说明
+
+1. [nginx](https://www.cnblogs.com/jimisun/p/8057156.html)
+> 直接安这个教程安装就可以，可以提升下版本  目录: cd /usr/local/nginx
+
+2. [node](https://www.cnblogs.com/zeussbook/p/11009639.html)
+> 直接安这个教程安装就可以，可以提升下版本 , 目录 cd /usr/local/node 下载也下载这个目录下解压
+
+3. [mongodb](https://www.cnblogs.com/ontoweb-zp/p/7670694.html)
+> 直接安这个教程安装, wget 直接修改下载版本号为4.2.1  目录 cd /usr/local/mongodb  注意目录 解压 改名为mongodb4.2.1 再这个目录下建data 再data目录下直接建db 和 logs
+
+```mongodb.conf
+    
+    # 创建配置文件 mongodb.conf：
+    vi mongodb.conf
+    
+     #设置数据文件的存放目录
+    dbpath = /usr/local/mongodb/mongodb4.2.1/data/db
+    
+    # 设置日志文件的存放目录及其日志文件名
+    logpath = /usr/local/mongodb/mongodb4.2.1/data/logs/mongodb.log
+    
+    # 设置端口号（默认的端口号是 27017）
+    port = 27017
+    
+    # 设置为以守护进程的方式运行，即在后台运行
+    fork = true
+    
+    # nohttpinterface = true
+    # nohttpinterface = true #这个报错 注释掉Error parsing INI config file: unrecognised option 'nohttpinterface'
+    
+    #ip限制如果指定ip使用的话
+    bind_ip = 0.0.0.0
+```
+
+4. [git](https://git-scm.com/download/linux) 
+>4.1  直接 yum install git 安装; 
+ 4.2 也可以[解压安装](https://www.cnblogs.com/gaogaoyanjiu/p/9463879.html)
+ 4.3 [git初始配置](https://git-scm.com/book/zh/v2/%E8%B5%B7%E6%AD%A5-%E5%88%9D%E6%AC%A1%E8%BF%90%E8%A1%8C-Git-%E5%89%8D%E7%9A%84%E9%85%8D%E7%BD%AE)
