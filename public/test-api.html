@@ -84,8 +84,12 @@
       },
       url: 'http://localhost:3000/api/users/addUser',
       success: function (data) {
-        console.log(data)
-        alert('添加成功')
+        if (data.status) {
+          console.log(data)
+          alert('添加成功')
+        } else {
+          alert(data.data.error)
+        }
       },
       error: function (e) {
         console.log(e)

@@ -16,6 +16,7 @@ const commonApi = require('../sql/control/common')
 // router.post('/common/upload', commonApi.uploadConfig.single('file'), commonApi.upload)
 router.post('/common/upload', commonApi.upload2)
 router.post('/common/upload/cos', commonApi.uploadOs)
+router.post('/common/upload/aws', commonApi.uploadAWS)
 
 // 用户相关
 router.get('/users/getUser', userApi.getUser)
