@@ -166,7 +166,7 @@ exports.uploadAWS = async (ctx, next) => {
         Key: 'cos_' + new Date().getTime() + '_' + file.name,
         Body: file_buffer
       }
-      s3.upload(params, function (perr, pres) {
+      s3.upload(params, function (perr, pres) { // 使用upload方法可以直接返回路径
         if (perr) {
           console.log('Error uploading data: ', perr)
           reject(perr)
