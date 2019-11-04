@@ -34,7 +34,7 @@ exports.list = async (ctx, next) => {
     let { page = 1, size = 20, flag, title } = ctx.request.query // get参数
     size = parseInt(size, 10)
     page = parseInt(page, 10) - 1 // 注意重0开始
-    console.log(ctx.request.params)
+    // console.log(ctx.request.params)
 
     const query = {}
 
@@ -82,7 +82,7 @@ exports.list = async (ctx, next) => {
 // Model.create(文档数据, callback(err)))
 exports.add = async (ctx, next) => {
   let reqBody = ctx.request.body
-  console.log(reqBody)
+  // console.log(reqBody)
   await new Promise((resolve, reject) => {
     Banner.create(Object.assign({}, {
       created: new Date().getTime(),

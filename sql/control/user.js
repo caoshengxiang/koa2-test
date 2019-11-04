@@ -205,7 +205,7 @@ exports.updateUser = async (ctx, next) => {
 exports.login = async (ctx, next) => {
   ctx.set('Access-Control-Allow-Origin', '*') // * 所有请求，或指定http://localhost:8080
   let params = ctx.request.body // post 参数
-  console.log(params, '登录参数')
+  // console.log(params, '登录参数')
   await new Promise((resolve, reject) => {
     // 去除password 字段返回
     User.findOne({ account: params.account, password: params.password }, {password: 0},  function (err, data) {

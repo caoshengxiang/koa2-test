@@ -60,7 +60,7 @@ exports.upload2 = async (ctx, next) => {
   // 上传单个文件
   const file = ctx.request.files.file // 获取上传文件
 
-  console.log(file)
+  // console.log(file)
   // ctx.body = file
 
   // 创建可读流
@@ -118,7 +118,7 @@ exports.uploadOs = async (ctx, next) => {
   request.post({ url: 'http://119.27.160.97:7995/suining/file/upload', formData }, function (error, response, body) {
 
     if (!error && response.statusCode == 200) {
-      console.log(body) // 请求成功的处理逻辑
+      // console.log(body) // 请求成功的处理逻辑
       ctx.body = {
         status: StatusCode.SUCCESS,
         data: {
@@ -157,8 +157,8 @@ exports.uploadAWS = async (ctx, next) => {
   await new Promise((resolve, reject) => { // 读image文件夹
     fs.readFile(path, function (err, file_buffer) {
       if (err) {
-        console.log(10000)
-        console.log(err)
+        // console.log(10000)
+        // console.log(err)
         reject(err)
       }
       let params = {

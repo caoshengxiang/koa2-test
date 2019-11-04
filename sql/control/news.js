@@ -34,7 +34,7 @@ exports.list = async (ctx, next) => {
     let { page = 1, size = 20, title, status } = ctx.request.query // get参数
     size = parseInt(size, 10)
     page = parseInt(page, 10) - 1
-    console.log(ctx.request.params)
+    // console.log(ctx.request.params)
 
     const query = {}
     if (title) {
