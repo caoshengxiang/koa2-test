@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <button onclick="getPortList()">获取港口</button>
+    <button onclick="getPortCodeImg()">识别图像</button>
+    <button onclick="getPortGroup()">组合查询</button>
+</body>
+<script src="jquery-3.2.1.js"></script>
+<script>
+    function getPortList () {
+      $.ajax({
+        type: 'get',
+        dataType: 'json',
+        url: 'http://localhost:3000/spider/s/rcl/port/list',
+        success: function (data) {
+          console.log(data)
+        }
+      })
+    }
+    function getPortCodeImg () {
+      $.ajax({
+        type: 'get',
+        dataType: 'json',
+        url: 'http://localhost:3000/spider/s/rcl/port/code',
+        success: function (data) {
+          console.log(data)
+        }
+      })
+    }
+    function getPortGroup () {
+      $.ajax({
+        type: 'get',
+        dataType: 'json',
+        url: 'http://localhost:3000/spider/s/rcl/port/group',
+        success: function (data) {
+          console.log(data)
+        }
+      })
+    }
+</script>
+</html>
