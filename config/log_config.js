@@ -33,7 +33,8 @@ module.exports = {
                 filename: errorLogPath,             //日志输出位置
                 alwaysIncludePattern:true,          //是否总是有后缀名
                 pattern: "-yyyy-MM-dd-hh.log",      //后缀，每小时创建一个新的日志文件
-                path: errorPath                     //自定义属性，错误日志的根目录
+                path: errorPath,                     //自定义属性，错误日志的根目录
+                maxFileSize: '500KB'
             },
             //响应日志
             {

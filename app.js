@@ -53,12 +53,12 @@ app.use(views(__dirname + '/views', {
 app.use(cors()) // cors跨域
 
 // logger
-app.use(async (ctx, next) => {
-  const start = new Date()
-  await next()
-  const ms = new Date() - start
-  console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
-})
+// app.use(async (ctx, next) => {
+//   const start = new Date()
+//   await next()
+//   const ms = new Date() - start
+//   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
+// })
 
 // logger
 app.use(async (ctx, next) => {
@@ -72,13 +72,13 @@ app.use(async (ctx, next) => {
 
         ms = new Date() - start;
         //记录响应日志
-        logUtil.logResponse(ctx, ms);
+        // logUtil.logResponse(ctx, ms);
 
     } catch (error) {
 
         ms = new Date() - start;
         //记录异常日志
-        logUtil.logError(ctx, error, ms);
+        // logUtil.logError(ctx, error, ms);
     }
 });
 
