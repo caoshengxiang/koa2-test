@@ -47,17 +47,28 @@ exports.testRequest = async (ctx, next) => { // 测试请求post
 }
 
 exports.mapPortGroup = async (ctx, next) => { // 港口组合
-  async function group (pol, pod) {
-    try {
+  async function group (CNARR, OTHERARR) {
+    // try {
+    //   const result = await superagent.get('http://localhost:3000/spider/s/rcl/port/group/all').query({
+    //     pol: pol,
+    //     pod: pod
+    //   })
+    // } catch (error) {
+    //   console.error(error)
+    // }
+    // for (let i = 0; i < CNARR.length; i++) {
+    for (let [j, kj] of OTHERARR.entries()) {
       const result = await superagent.get('http://localhost:3000/spider/s/rcl/port/group/all').query({
-        pol: pol,
-        pod: pod
+        pol: CNARR[0],
+        pod: OTHERARR[j]
       })
-    } catch (error) {
-      console.error(error)
+      console.log({
+        pol: CNARR[0],
+        pod: OTHERARR[j]
+      })
     }
+    // }
   }
-
 
   await new Promise((resolve, reject) => {
     Port.find().then(da => {
@@ -69,15 +80,7 @@ exports.mapPortGroup = async (ctx, next) => { // 港口组合
         } else {
           OTHERARR.push(item.portCode)
         }
-        // resolve({
-        //   cn: CNARR,
-        //   o: OTHERARR
-        // })
-        for (let i = 0; i < CNARR.length; i++) {
-          for (let j = 0; j < OTHERARR.length; j++) {
-
-          }
-        }
+        group(CNARR,OTHERARR)
 
       }))
     }).catch(err => {
