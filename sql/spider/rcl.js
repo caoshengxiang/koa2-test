@@ -1,4 +1,6 @@
 const StatusCode = require('../../config/status_code')
+const Rcl = require('../schema/rcl')
+const Port = require('../schema/port')
 
 /*
 *
@@ -10,43 +12,161 @@ const StatusCode = require('../../config/status_code')
 const superagent = require('superagent')
 const cheerio = require('cheerio')
 const tesseract = require('tesseract.js')
-const FormData = require('form-data')
 const PARAMS = require('../test')
+const moment = require('moment')
 
 exports.testPost = async (ctx, next) => {
   let params = ctx.request.body
-  ctx.body = params
+  console.log('params', params)
+  ctx.body = {
+    text: PARAMS.html
+  }
+}
+exports.testRequest = async (ctx, next) => { // 测试请求post
+  await new Promise((resolve, reject) => {
+    superagent.post('http://localhost:3000/spider/s/rcl/test')
+      .type('form')
+      .send({ id: '1' })
+      .then(res => {
+        resolve(res)
+      })
+      .catch(err => {
+        console.log('错误')
+        reject(err)
+      })
+  }).then(da => {
+    ctx.body = {
+      data: da
+    }
+  }).catch(err => {
+    console.log('这里发生错误')
+    ctx.body = {
+      error: err
+    }
+  })
 }
 
-exports.portGroup = async (ctx, next) => {
-  await new Promise((resolve, reject) => {
-    let form = new FormData()
-    for (let key in PARAMS.params) {
-      form.append('key', PARAMS.params[key])
+exports.mapPortGroup = async (ctx, next) => { // 港口组合
+  async function group (pol, pod) {
+    try {
+      const result = await superagent.get('http://localhost:3000/spider/s/rcl/port/group/all').query({
+        pol: pol,
+        pod: pod
+      })
+    } catch (error) {
+      console.error(error)
     }
-    superagent.POST('https://www.rclgroup.com/210Sailing_Schedule019')
-      .set('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3')
-      .set('Accept-Encoding', 'gzip, deflate, br')
-      .set('Accept-Language', 'zh-CN,zh;q=0.9')
-      .set('Cache-Control', 'max-age=0')
-      .set('Connection', 'keep-alive')
-      .set('Content-Length', '17396')
-      .set('Content-Type', 'application/x-www-form-urlencoded')
-      .set('Cookie', 'cookiesession1=4860C136OTGPEY95UOJ8WIAH3EJL6F92; _ga=GA1.2.383328044.1572849733; _gid=GA1.2.1411074388.1572849733')
-      .set('Host', 'www.rclgroup.com')
-      .set('Origin', 'https://www.rclgroup.com')
-      .set('Referer', 'https://www.rclgroup.com/Home')
-      .set('Sec-Fetch-Mode', 'navigate')
-      .set('Sec-Fetch-Site', 'none')
-      .set('Sec-Fetch-User', '?1')
-      .set('Upgrade-Insecure-Requests', '1')
-      .set('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.62 Safari/537.36')
-      .send(form)
-      .then(res => {
-      resolve(res.text)
+  }
+
+
+  await new Promise((resolve, reject) => {
+    Port.find().then(da => {
+      let CNARR = []
+      let OTHERARR = []
+      da.map((item => {
+        if (item.portCode.substr(0, 2) == 'CN') {
+          CNARR.push(item.portCode)
+        } else {
+          OTHERARR.push(item.portCode)
+        }
+        // resolve({
+        //   cn: CNARR,
+        //   o: OTHERARR
+        // })
+        for (let i = 0; i < CNARR.length; i++) {
+          for (let j = 0; j < OTHERARR.length; j++) {
+
+          }
+        }
+
+      }))
     }).catch(err => {
       reject(err)
     })
+  }).then(da => {
+    ctx.body = {
+      data: da
+    }
+  }).catch(err => {
+    ctx.body = {
+      error: err
+    }
+  })
+}
+
+exports.portGroup = async (ctx, next) => { // 起点终点查询
+  let q = ctx.request.query
+  let pa = Object.assign({}, PARAMS.params, {
+    ctl00$ContentPlaceHolder1$vsdate: moment().format('DD/MM/YYYY'),
+    ctl00$ContentPlaceHolder1$vsLoading: q.pol,
+    ctl00$ContentPlaceHolder1$vsDischarge: q.pod
+  })
+  await new Promise((resolve, reject) => {
+    superagent.post('https://www.rclgroup.com/210Sailing_Schedule019')
+      .type('form')
+      .send(pa)
+      .then(res => {
+        let data = []
+        let $ = cheerio.load(res.text)
+        let trLength = $('#vesseltable tbody tr').length
+        $('#vesseltable tbody tr').each((inx, ele) => {
+          let dObj = {}
+          if ($(ele).find('td').length > 1) {
+            $(ele).find('td').each((index, tdEle) => {
+              console.log($(tdEle).attr('data-label'))
+              switch ($(tdEle).attr('data-label')) {
+                case 'Vessel Name':
+                  dObj.VESSEL = $(tdEle).text()
+                  break
+                case 'Voy No':
+                  dObj.VOYAGE = $(tdEle).text()
+                  break
+                case 'Port of Loading':
+                  dObj.POL_NAME_EN = $(tdEle).text()
+                  break
+                case 'Loading Port(Arrival)':
+                  dObj.LPA = $(tdEle).text()
+                  break
+                case 'Loading Port(Departure)':
+                  dObj.ETD = $(tdEle).text()
+                  break
+                case 'Port of Discharge':
+                  dObj.POD_NAME_EN = $(tdEle).text()
+                  break
+                case 'Destination Arrival':
+                  dObj.ETA = $(tdEle).text()
+                  break
+                case 'Transit Time':
+                  dObj.TRANSIT_TIME = $(tdEle).text()
+                  break
+                case 'Vessel Flag':
+                  dObj.FLAG = $(tdEle).text()
+                  break
+                // case '':
+                //   // dObj.IS_TRANSIT = 0
+                //   break
+                default:
+                  break
+              }
+            })
+            if (dObj.VESSEL) {
+              data.push(dObj)
+            }
+          }
+        })
+        Rcl.insertMany(data, function (err) { // 存入多条数据
+          if (err) {
+            console.log('写入错误')
+            reject(err)
+          } else {
+            console.log('批量写入')
+            resolve(data)
+          }
+        })
+      })
+      .catch(err => {
+        reject(err)
+      })
   }).then(da => {
     ctx.body = {
       data: da
@@ -73,11 +193,30 @@ exports.portList = async (ctx, next) => {
         }
         dataArr.push(obj)
       })
-      resolve(dataArr)
+
+      Port.remove().then(() => {
+        console.log('删除')
+        Port.insertMany(dataArr, function (err) { // 存入多条数据
+          if (err) {
+            console.log('写入错误')
+            reject(err)
+          } else {
+            console.log('批量写入')
+            resolve(dataArr)
+          }
+        })
+      })
     }).catch(err => {
       reject(err)
     })
   }).then(da => {
+    console.log('数据获取正常')
+    // Port.create(da[0]).then((d) => {
+    //   console.log('create', d)
+    //   ctx.body = {
+    //     data: da[0]
+    //   }
+    // })
     ctx.body = {
       data: da
     }

@@ -12,7 +12,7 @@ exports.params = {
   ctl00$ContentPlaceHolder1$vsdate: '04/11/2019',
   ctl00$ContentPlaceHolder1$vsduration: '42',
   ctl00$ContentPlaceHolder1$vsLoading: 'AEDXB',
-  ctl00$ContentPlaceHolder1$vsDischarge: 'CNDLC',
+  ctl00$ContentPlaceHolder1$vsDischarge: 'AEKLF',
   ctl00$ContentPlaceHolder1$sCaptcha: '9ba',
   ctl00$ContentPlaceHolder1$submitVS: 'Submit',
   ctl00$ContentPlaceHolder1$ltService: 'ALO',
