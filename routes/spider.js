@@ -13,5 +13,6 @@ router.get('/s/jianshu', baiduNews.jianShuList)
 router.get('/s/rcl/port/list', rcl.portList)
 router.get('/s/rcl/port/code', rcl.testCodeImg)
 router.get('/s/rcl/port/group', rcl.portGroup)
+router.post('/s/rcl/test', rcl.testPost)
 
 module.exports = router

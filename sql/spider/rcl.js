@@ -13,6 +13,11 @@ const tesseract = require('tesseract.js')
 const FormData = require('form-data')
 const PARAMS = require('../test')
 
+exports.testPost = async (ctx, next) => {
+  let params = ctx.request.body
+  ctx.body = params
+}
+
 exports.portGroup = async (ctx, next) => {
   await new Promise((resolve, reject) => {
     let form = new FormData()
