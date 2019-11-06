@@ -9,6 +9,7 @@ var logUtil = {};
 
 var errorLogger = log4js.getLogger('errorLogger');
 var resLogger = log4js.getLogger('resLogger');
+var spiderLogger = log4js.getLogger('spiderLogger');
 
 //封装错误日志
 logUtil.logError = function (ctx, error, resTime) {
@@ -21,6 +22,12 @@ logUtil.logError = function (ctx, error, resTime) {
 logUtil.logResponse = function (ctx, resTime) {
     if (ctx) {
         resLogger.info(formatRes(ctx, resTime));
+    }
+};
+//爬虫响应日志
+logUtil.spiderLogger = function (txt) {
+    if (txt) {
+        spiderLogger.info(txt);
     }
 };
 

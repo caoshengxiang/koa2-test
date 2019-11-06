@@ -20,6 +20,15 @@ var responseFileName = "response";
 var responseLogPath = baseLogPath + responsePath + "/" + responseFileName;
 // var responseLogPath = path.resolve(__dirname, "../logs/response/response");
 
+/*爬虫*/
+//爬虫日志目录
+var spiderPath = "/spider";
+//爬虫日志文件名
+var spiderFileName = "spider";
+//爬虫日志输出完整路径
+var spiderLogPath = baseLogPath + spiderPath + "/" + spiderFileName;
+// var responseLogPath = path.resolve(__dirname, "../logs/response/response");
+
 module.exports = {
     appenders:
         [
@@ -43,6 +52,15 @@ module.exports = {
                 alwaysIncludePattern:true,
                 pattern: "-yyyy-MM-dd-hh.log",
                 path: responsePath
+            },
+            //爬虫日志
+            {
+                category:"spiderLogger",
+                type: "dateFile",
+                filename: spiderLogPath,
+                alwaysIncludePattern:true,
+                pattern: "-yyyy-MM-dd-hh.log",
+                path: spiderPath
             }
         ],
         // {

@@ -1,6 +1,7 @@
 const StatusCode = require('../../config/status_code')
 const Rcl = require('../schema/rcl')
 const Port = require('../schema/port')
+const logUtil = require('../../utils/log_util')
 
 /*
 *
@@ -15,74 +16,12 @@ const tesseract = require('tesseract.js')
 const PARAMS = require('../test')
 const moment = require('moment')
 
-exports.testPost = async (ctx, next) => {
-  let params = ctx.request.body
-  console.log('params', params)
-  ctx.body = {
-    text: PARAMS.html
-  }
-}
-exports.testRequest = async (ctx, next) => { // 测试请求post
-  await new Promise((resolve, reject) => {
-    superagent.post('http://localhost:3000/spider/s/rcl/test')
-      .type('form')
-      .send({ id: '1' })
-      .then(res => {
-        resolve(res)
-      })
-      .catch(err => {
-        console.log('错误')
-        reject(err)
-      })
-  }).then(da => {
-    ctx.body = {
-      data: da
-    }
-  }).catch(err => {
-    console.log('这里发生错误')
-    ctx.body = {
-      error: err
-    }
-  })
-}
-
-exports.mapPortGroup = async (ctx, next) => { // 港口组合
-  async function group (CNARR, OTHERARR) {
-    // try {
-    //   const result = await superagent.get('http://localhost:3000/spider/s/rcl/port/group/all').query({
-    //     pol: pol,
-    //     pod: pod
-    //   })
-    // } catch (error) {
-    //   console.error(error)
-    // }
-    // for (let i = 0; i < CNARR.length; i++) {
-    for (let [j, kj] of OTHERARR.entries()) {
-      const result = await superagent.get('http://localhost:3000/spider/s/rcl/port/group/all').query({
-        pol: CNARR[0],
-        pod: OTHERARR[j]
-      })
-      console.log({
-        pol: CNARR[0],
-        pod: OTHERARR[j]
-      })
-    }
-    // }
-  }
-
+exports.portListLocal = async (ctx, next) => {
+  // let params = ctx.request.body
+  // console.log('params', params)
   await new Promise((resolve, reject) => {
     Port.find().then(da => {
-      let CNARR = []
-      let OTHERARR = []
-      da.map((item => {
-        if (item.portCode.substr(0, 2) == 'CN') {
-          CNARR.push(item.portCode)
-        } else {
-          OTHERARR.push(item.portCode)
-        }
-        group(CNARR,OTHERARR)
-
-      }))
+      resolve(da)
     }).catch(err => {
       reject(err)
     })
@@ -97,13 +36,135 @@ exports.mapPortGroup = async (ctx, next) => { // 港口组合
   })
 }
 
-exports.portGroup = async (ctx, next) => { // 起点终点查询
+exports.testRequest = async (ctx, next) => {  // 测试循环请求
+  async function Func (i, j) { // 测试循环请求
+    return new Promise((resolve, reject) => {
+      superagent.post('http://localhost:3000/spider/s/rcl/port/local')
+        .then(res => {
+          // console.log(res) // superagent 返回 res.text 文本才是上个接口返回的数据
+          setTimeout(() => {
+            console.log('接口调用一次', i, j)
+            resolve(JSON.parse(res.text).data)
+          }, 2000)
+
+        })
+        .catch(err => {
+          console.log('错误')
+          reject(err)
+        })
+    })
+  }
+
+  let data = []
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 2; j++) {
+      let da = await Func(i, j)
+      data.push(da)
+    }
+  }
+
+  console.log('数据')
+  ctx.body = {
+    data: data
+  }
+}
+
+exports.mapPortGroup = async (ctx, next) => { // 港口组合
+  async function oneGroup (pol, pod) {
+    let startTime = new Date().getTime()
+    console.log('开始请求', { pol, pod })
+    logUtil.spiderLogger('******************')
+    logUtil.spiderLogger(`开始请求 --- pol: ${pol}, pod: ${pod}`)
+    return new Promise((resolve, reject) => {
+      superagent.get('http://localhost:3000/spider/s/rcl/port/group/one').query({
+        pol: pol,
+        pod: pod
+      })
+        .then(res => {
+          let endTime = new Date().getTime()
+          console.log('完成一次请求', { pol, pod, time: (endTime - startTime) / 1000 })
+          logUtil.spiderLogger(`完成一次请求 --- pol: ${pol}, pod: ${pod} ---- 用时(s): ${(endTime - startTime) / 1000}`)
+
+          resolve(JSON.parse(res.text).data)
+        })
+        .catch(err => {
+          console.log('错误----继续执行')
+          logUtil.spiderLogger(`错误 pol: ${pol}, pod: ${pod} ,错误信息：`)
+          logUtil.spiderLogger(err)
+          resolve(err)
+        })
+    })
+  }
+
+  async function Func (i, j) { // 测试循环请求
+    let startTime = new Date().getTime()
+    return new Promise((resolve, reject) => {
+      superagent.post('http://localhost:3000/spider/s/rcl/port/local').query({ i, j })
+        .then(res => {
+          // console.log(res) // superagent 返回 res.text 文本才是上个接口返回的数据
+          setTimeout(() => {
+            let endTime = new Date().getTime()
+            console.log('接口调用一次', i, j, (endTime - startTime) / 1000, 'm')
+            resolve(JSON.parse(res.text).data)
+          }, 2000)
+
+        })
+        .catch(err => {
+          console.log('错误')
+          reject(err)
+        })
+    })
+  }
+
+  await new Promise((resolve, reject) => {
+    Port.find().then(async da => {
+      let CNARR = []
+      let OTHERARR = []
+      da.map((item => {
+          if (item.portCode.substr(0, 2) == 'CN' || item.portCode == 'HKHKG') {
+            CNARR.push(item.portCode)
+          } else {
+            OTHERARR.push(item.portCode)
+          }
+        }
+      ))
+      // for (let i = 0; i < CNARR.length; i++) {
+      //   for (let j = 0; j < OTHERARR.length; j++) {
+      for (let i = 0; i < CNARR.length; i++) {
+        for (let j = 0; j < OTHERARR.length; j++) {
+          let oneDa = await oneGroup(CNARR[i], OTHERARR[j])
+          // let da = await Func(i, j)
+          console.log('one await end', i, j)
+          logUtil.spiderLogger(`一个异步 await 结束 --- i: ${i}, j: ${j}`)
+          logUtil.spiderLogger('----------------')
+          logUtil.spiderLogger('----------------')
+        }
+      }
+      resolve('ok!')
+    }).catch(err => {
+      reject(err)
+    })
+  }).then(da => {
+    ctx.body = {
+      data: da
+    }
+  }).catch(err => {
+    ctx.body = {
+      error: err
+    }
+  })
+}
+
+exports.portGroupOne = async (ctx, next) => { // 起点终点查询
   let q = ctx.request.query
-  let pa = Object.assign({}, PARAMS.params, {
+  let oPa = {
     ctl00$ContentPlaceHolder1$vsdate: moment().format('DD/MM/YYYY'),
     ctl00$ContentPlaceHolder1$vsLoading: q.pol,
     ctl00$ContentPlaceHolder1$vsDischarge: q.pod
-  })
+  }
+  let pa = Object.assign({}, PARAMS.params, oPa)
+  logUtil.spiderLogger(`外部请求的参数变量, ${JSON.stringify(oPa)}`)
+  let startTime = new Date().getTime()
   await new Promise((resolve, reject) => {
     superagent.post('https://www.rclgroup.com/210Sailing_Schedule019')
       .type('form')
@@ -112,11 +173,36 @@ exports.portGroup = async (ctx, next) => { // 起点终点查询
         let data = []
         let $ = cheerio.load(res.text)
         let trLength = $('#vesseltable tbody tr').length
+        console.log('trLength', trLength)
+        let endTime = new Date().getTime()
         $('#vesseltable tbody tr').each((inx, ele) => {
-          let dObj = {}
+          let dObj = {
+            pol: q.pol,
+            pod: q.pod,
+            useTime: (endTime - startTime),
+            date: pa.ctl00$ContentPlaceHolder1$vsdate,
+            IS_TRANSIT: 0 // 确认为中转为1，直达为0
+          }
+          // 处理中转 问题
+          let className = $(ele).attr('class')
+          let nextClassName = $(ele).next().attr('class')
+          let prevClassName = $(ele).prev().attr('class')
+          if (className != 'row2' && nextClassName) {
+            if (className === nextClassName) { // 当前 与下一个 相同class
+              dObj.IS_TRANSIT = 1
+              logUtil.spiderLogger(`记录一次中转----class: ${className}, prev: ${prevClassName}, next: ${nextClassName}`)
+            }
+          }
+          if (className != 'row2' && prevClassName) {
+            if (className === prevClassName) { // 当前 与前一个 相同class
+              dObj.IS_TRANSIT = 1
+              logUtil.spiderLogger(`记录一次中转----class: ${className}, prev: ${prevClassName}, next: ${nextClassName}`)
+            }
+          }
+
           if ($(ele).find('td').length > 1) {
             $(ele).find('td').each((index, tdEle) => {
-              console.log($(tdEle).attr('data-label'))
+              // console.log($(tdEle).attr('data-label'))
               switch ($(tdEle).attr('data-label')) {
                 case 'Vessel Name':
                   dObj.VESSEL = $(tdEle).text()
@@ -151,21 +237,30 @@ exports.portGroup = async (ctx, next) => { // 起点终点查询
                 default:
                   break
               }
+
             })
             if (dObj.VESSEL) {
               data.push(dObj)
             }
           }
         })
-        Rcl.insertMany(data, function (err) { // 存入多条数据
-          if (err) {
-            console.log('写入错误')
-            reject(err)
-          } else {
-            console.log('批量写入')
-            resolve(data)
-          }
-        })
+        if (data.length) {
+          Rcl.insertMany(data, function (err) { // 存入多条数据
+            if (err) {
+              console.log('写入错误')
+              logUtil.spiderLogger('入库错误 ---- reject')
+              logUtil.spiderLogger(err)
+              reject(err)
+            } else {
+              console.log('批量写入')
+              logUtil.spiderLogger(`入库成功 ${data.length} 条数据`)
+              resolve(data)
+            }
+          })
+        } else {
+          logUtil.spiderLogger(`组合未查到数据 pol: ${q.pol},pod: ${q.pod}`)
+          resolve([])
+        }
       })
       .catch(err => {
         reject(err)
