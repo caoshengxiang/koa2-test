@@ -1,6 +1,7 @@
 const StatusCode = require('../../config/status_code')
 const Rcl = require('../schema/rcl')
 const Port = require('../schema/port')
+const PortGroup = require('../schema/portGorup')
 const logUtil = require('../../utils/log_util')
 
 /*
@@ -39,7 +40,7 @@ exports.portListLocal = async (ctx, next) => {
 exports.testRequest = async (ctx, next) => {  // 测试循环请求
   async function Func (i, j) { // 测试循环请求
     return new Promise((resolve, reject) => {
-      superagent.post('http://localhost:3000/spider/s/rcl/port/local')
+      superagent.post('http://localhost:3001/spider/s/rcl/port/local')
         .then(res => {
           // console.log(res) // superagent 返回 res.text 文本才是上个接口返回的数据
           setTimeout(() => {
@@ -70,27 +71,22 @@ exports.testRequest = async (ctx, next) => {  // 测试循环请求
 }
 
 exports.mapPortGroup = async (ctx, next) => { // 港口组合
+  console.log('组合查询开始')
+  logUtil.spiderLogger('*********组合查询开始*********')
+
   async function oneGroup (pol, pod) {
     let startTime = new Date().getTime()
-    console.log('开始请求', { pol, pod })
-    logUtil.spiderLogger('******************')
-    logUtil.spiderLogger(`开始请求 --- pol: ${pol}, pod: ${pod}`)
     return new Promise((resolve, reject) => {
-      superagent.get('http://localhost:3000/spider/s/rcl/port/group/one').query({
+      superagent.get('http://localhost:3001/spider/s/rcl/port/group/one').query({
         pol: pol,
         pod: pod
       })
         .then(res => {
-          let endTime = new Date().getTime()
-          console.log('完成一次请求', { pol, pod, time: (endTime - startTime) / 1000 })
-          logUtil.spiderLogger(`完成一次请求 --- pol: ${pol}, pod: ${pod} ---- 用时(s): ${(endTime - startTime) / 1000}`)
-
           resolve(JSON.parse(res.text).data)
         })
         .catch(err => {
-          console.log('错误----继续执行')
-          logUtil.spiderLogger(`错误 pol: ${pol}, pod: ${pod} ,错误信息：`)
-          logUtil.spiderLogger(err)
+          console.log('错误----resolve继续执行 next-----')
+          logUtil.spiderLogger(`错误----resolve继续执行 next---`)
           resolve(err)
         })
     })
@@ -99,7 +95,7 @@ exports.mapPortGroup = async (ctx, next) => { // 港口组合
   async function Func (i, j) { // 测试循环请求
     let startTime = new Date().getTime()
     return new Promise((resolve, reject) => {
-      superagent.post('http://localhost:3000/spider/s/rcl/port/local').query({ i, j })
+      superagent.post('http://localhost:3001/spider/s/rcl/port/local').query({ i, j })
         .then(res => {
           // console.log(res) // superagent 返回 res.text 文本才是上个接口返回的数据
           setTimeout(() => {
@@ -128,6 +124,8 @@ exports.mapPortGroup = async (ctx, next) => { // 港口组合
           }
         }
       ))
+      logUtil.spiderLogger(`目标组合:, ${CNARR.length}, '*', ${OTHERARR.length}, '=', ${CNARR.length * OTHERARR.length}`)
+      console.log(`目标组合:${CNARR.length}*${OTHERARR.length}=${CNARR.length * OTHERARR.length}`)
       // for (let i = 0; i < CNARR.length; i++) {
       //   for (let j = 0; j < OTHERARR.length; j++) {
       for (let i = 0; i < CNARR.length; i++) {
@@ -136,6 +134,8 @@ exports.mapPortGroup = async (ctx, next) => { // 港口组合
           // let da = await Func(i, j)
           console.log('one await end', i, j)
           logUtil.spiderLogger(`一个异步 await 结束 --- i: ${i}, j: ${j}`)
+          logUtil.spiderLogger(`完成进度:(${((i+1)*OTHERARR.length + j+1)}/${CNARR.length * OTHERARR.length}), ${((i+1)*OTHERARR.length + j+1)/(CNARR.length * OTHERARR.length)}`)
+          console.log(`完成进度:(${((i+1)*OTHERARR.length + j+1)}/${CNARR.length * OTHERARR.length}), ${((i+1)*OTHERARR.length + j+1)/(CNARR.length * OTHERARR.length)}`)
           logUtil.spiderLogger('----------------')
           logUtil.spiderLogger('----------------')
         }
@@ -156,21 +156,50 @@ exports.mapPortGroup = async (ctx, next) => { // 港口组合
 }
 
 exports.portGroupOne = async (ctx, next) => { // 起点终点查询
+  logUtil.spiderLogger('******************')
+  logUtil.spiderLogger('******************')
+  logUtil.spiderLogger('******************')
   let q = ctx.request.query
+  if (q.pol.substr(0, 2) !== 'CN' && q.pol !== 'HKHKG') {
+    logUtil.spiderLogger('非中国港口开始--- end')
+    console.log('非中国港口开始--- end')
+    ctx.body = {
+      data: '非中国港口开始--- end'
+    }
+    return
+  }
+  if (q.pod.substr(0, 2) == 'CN' || q.pod == 'HKHKG') {
+    logUtil.spiderLogger('非中国港口以外的港口结束--- end')
+    console.log('非中国港口以外的港口结束--- end')
+    ctx.body = {
+      data: '非中国港口以外的港口结束--- end'
+    }
+    return
+  }
+  if (q.pol === q.pod) {
+    logUtil.spiderLogger('起始-终止港口相同--- end')
+    console.log('起始-终止港口相同--- end')
+    ctx.body = {
+      data: '起始-终止港口相同--- end'
+    }
+    return
+  }
   let oPa = {
     ctl00$ContentPlaceHolder1$vsdate: moment().format('DD/MM/YYYY'),
     ctl00$ContentPlaceHolder1$vsLoading: q.pol,
     ctl00$ContentPlaceHolder1$vsDischarge: q.pod
   }
   let pa = Object.assign({}, PARAMS.params, oPa)
-  logUtil.spiderLogger(`外部请求的参数变量, ${JSON.stringify(oPa)}`)
   let startTime = new Date().getTime()
+  logUtil.spiderLogger(`开始请求 --- pol: ${q.pol}, pod: ${q.pod}`)
+  logUtil.spiderLogger(`外部请求的参数变量: ${JSON.stringify(oPa)}`)
   await new Promise((resolve, reject) => {
     superagent.post('https://www.rclgroup.com/210Sailing_Schedule019')
       .type('form')
       .send(pa)
       .then(res => {
         let data = []
+        let Ele = res.text
         let $ = cheerio.load(res.text)
         let trLength = $('#vesseltable tbody tr').length
         console.log('trLength', trLength)
@@ -245,31 +274,87 @@ exports.portGroupOne = async (ctx, next) => { // 起点终点查询
           }
         })
         if (data.length) {
-          Rcl.insertMany(data, function (err) { // 存入多条数据
+          // 先删除 日期-组合数据
+          Rcl.remove({pol: q.pol, pod: q.pod, time: moment().format('DD/MM/YYYY')}, function (err) {
             if (err) {
-              console.log('写入错误')
-              logUtil.spiderLogger('入库错误 ---- reject')
-              logUtil.spiderLogger(err)
+              console.log(`删除 历史 日期-组合数据 发生错误 ${JSON.stringify({pol: q.pol, pod: q.pod, time: moment().format('DD/MM/YYYY')})}`)
+              logUtil.spiderLogger(`删除 历史 日期-组合数据 发生错误 ${JSON.stringify({pol: q.pol, pod: q.pod, time: moment().format('DD/MM/YYYY')})}`)
               reject(err)
             } else {
-              console.log('批量写入')
-              logUtil.spiderLogger(`入库成功 ${data.length} 条数据`)
-              resolve(data)
+              Rcl.insertMany(data, function (err) { // 存入多条数据
+                if (err) {
+                  console.log('写入错误')
+                  logUtil.spiderLogger('入库错误 ---- reject')
+                  logUtil.spiderLogger(err)
+                  reject(err)
+                } else {
+                  console.log(`入库成功 ${data.length} 条数据`)
+                  logUtil.spiderLogger(`入库成功 ${data.length} 条数据`)
+
+                  // 跟新组合
+                  PortGroup.update({ portPol: q.pol, portPod: q.pod },
+                    { portPol: q.pol, portPod: q.pod, status: 1, content: Ele, userTime: endTime - startTime },
+                    { upsert: true }, function (err) {
+                      if (err) {
+                        logUtil.spiderLogger('获取数据成功---插入/更新组合错误')
+                        resolve('获取数据成功---插入/更新组合---错误')
+                      } else {
+                        logUtil.spiderLogger(`插入/更新组合--成功 ${q.pol}-${q.pod}-1`)
+                        resolve(data)
+                      }
+                    })
+                }
+              })
             }
           })
         } else {
           logUtil.spiderLogger(`组合未查到数据 pol: ${q.pol},pod: ${q.pod}`)
-          resolve([])
+
+          // 跟新组合
+          PortGroup.update({ portPol: q.pol, portPod: q.pod },
+            { portPol: q.pol, portPod: q.pod, status: 2, content: Ele, userTime: endTime - startTime },
+            { upsert: true }, function (err) {
+              if (err) {
+                logUtil.spiderLogger('无数据---插入/更新组合错误')
+                resolve('无数据---插入/更新组合---错误')
+              } else {
+                logUtil.spiderLogger(`插入/更新组合--成功 ${q.pol}-${q.pod}-2`)
+                resolve([])
+              }
+            })
+
         }
       })
       .catch(err => {
-        reject(err)
+        let endTime = new Date().getTime()
+        console.log('捕获到 外部接口请求错误。', err.status)
+        logUtil.spiderLogger(`捕获到 外部接口请求错误。完整错误信息：${JSON.stringify(err)}`)
+        // 跟新组合
+        PortGroup.update({ portPol: q.pol, portPod: q.pod },
+          { portPol: q.pol, portPod: q.pod, status: 3, content: JSON.stringify(err), userTime: endTime - startTime },
+          { upsert: true }, function (err) {
+            if (err) {
+              logUtil.spiderLogger('获取数据异常---插入/更新组合错误')
+              resolve('获取数据异常---插入/更新组合---错误')
+            } else {
+              logUtil.spiderLogger(`插入/更新组合--成功 ${q.pol}-${q.pod}-3（异常）`)
+              reject(err)
+            }
+          })
       })
   }).then(da => {
+    let endTime = new Date().getTime()
+    console.log('完成一次请求', { pol: q.pol, pod: q.pod, time: (endTime - startTime) / 1000 })
+    logUtil.spiderLogger(`完成一次请求 --- pol: ${q.pol}, pod: ${q.pod} ---- 用时(s): ${(endTime - startTime) / 1000}`)
+
     ctx.body = {
       data: da
     }
   }).catch(err => {
+    let endTime = new Date().getTime()
+    console.log('完成一次请求（有错误）', { pol: q.pol, pod: q.pod, time: (endTime - startTime) / 1000 })
+    logUtil.spiderLogger(`完成一次请求（有错误） --- pol: ${q.pol}, pod: ${q.pod} ---- 用时(s): ${(endTime - startTime) / 1000}`)
+
     ctx.body = {
       error: err
     }

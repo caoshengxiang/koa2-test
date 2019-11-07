@@ -1,4 +1,4 @@
 module.exports = {
-    dbLocal: 'mongodb://52.14.39.214:27017/',
+    dbLocal: 'mongodb://49.235.131.71:27017/',
     dbName: 'rcl',
 }
