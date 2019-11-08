@@ -86,7 +86,19 @@ exports.mapPortGroup = async (ctx, next) => { // 港口组合
         })
         .catch(err => {
           console.log('错误----resolve继续执行 next-----')
-          logUtil.spiderLogger(`错误----resolve继续执行 next---`)
+          logUtil.spiderLogger(`错误----resolve继续执行 next--- ${err}`)
+          // 跟新组合(处理 Error: socket hang up)
+          PortGroup.update({ portPol: pol, portPod: pod, date: moment().format('DD/MM/YYYY') },
+            { portPol: pol, portPod: pod, status: 4, content: '', userTime: '', date: moment().format('DD/MM/YYYY') },
+            { upsert: true }, function (err) {
+              if (err) {
+                logUtil.spiderLogger('错误处理 Error: socket hang up---插入/更新组合错误')
+                resolve('错误处理 Error: socket hang up---插入/更新组合错误')
+              } else {
+                logUtil.spiderLogger(`错误处理 Error: socket hang up---插入/更新组合成功 ${pol}-${pod}-4`)
+                resolve([])
+              }
+            })
           resolve(err)
         })
     })
@@ -113,7 +125,7 @@ exports.mapPortGroup = async (ctx, next) => { // 港口组合
   }
 
   await new Promise((resolve, reject) => {
-    Port.find().then(async da => {
+    Port.find({}).then(async da => {
       let CNARR = []
       let OTHERARR = []
       da.map((item => {
@@ -124,7 +136,7 @@ exports.mapPortGroup = async (ctx, next) => { // 港口组合
           }
         }
       ))
-      logUtil.spiderLogger(`目标组合:, ${CNARR.length}, '*', ${OTHERARR.length}, '=', ${CNARR.length * OTHERARR.length}`)
+      logUtil.spiderLogger(`目标组合:${CNARR.length}*${OTHERARR.length}=${CNARR.length * OTHERARR.length}, 预计耗时：${CNARR.length * OTHERARR.length * 21 / 3600} h`)
       console.log(`目标组合:${CNARR.length}*${OTHERARR.length}=${CNARR.length * OTHERARR.length}`)
       // for (let i = 0; i < CNARR.length; i++) {
       //   for (let j = 0; j < OTHERARR.length; j++) {
@@ -134,8 +146,8 @@ exports.mapPortGroup = async (ctx, next) => { // 港口组合
           // let da = await Func(i, j)
           console.log('one await end', i, j)
           logUtil.spiderLogger(`一个异步 await 结束 --- i: ${i}, j: ${j}`)
-          logUtil.spiderLogger(`完成进度:(${((i+1)*OTHERARR.length + j+1)}/${CNARR.length * OTHERARR.length}), ${((i+1)*OTHERARR.length + j+1)/(CNARR.length * OTHERARR.length)}`)
-          console.log(`完成进度:(${((i+1)*OTHERARR.length + j+1)}/${CNARR.length * OTHERARR.length}), ${((i+1)*OTHERARR.length + j+1)/(CNARR.length * OTHERARR.length)}`)
+          logUtil.spiderLogger(`完成进度:(${((i) * OTHERARR.length + j + 1)}/${CNARR.length * OTHERARR.length}), ${((i + 1) * OTHERARR.length + j + 1) / (CNARR.length * OTHERARR.length)}`)
+          console.log(`完成进度:(${((i) * OTHERARR.length + j + 1)}/${CNARR.length * OTHERARR.length}), ${((i + 1) * OTHERARR.length + j + 1) / (CNARR.length * OTHERARR.length)}`)
           logUtil.spiderLogger('----------------')
           logUtil.spiderLogger('----------------')
         }
@@ -185,7 +197,7 @@ exports.portGroupOne = async (ctx, next) => { // 起点终点查询
     return
   }
   let oPa = {
-    ctl00$ContentPlaceHolder1$vsdate: moment().format('DD/MM/YYYY'),
+    ctl00$ContentPlaceHolder1$vsdate: q.date || moment().format('DD/MM/YYYY'),
     ctl00$ContentPlaceHolder1$vsLoading: q.pol,
     ctl00$ContentPlaceHolder1$vsDischarge: q.pod
   }
@@ -275,12 +287,26 @@ exports.portGroupOne = async (ctx, next) => { // 起点终点查询
         })
         if (data.length) {
           // 先删除 日期-组合数据
-          Rcl.remove({pol: q.pol, pod: q.pod, time: moment().format('DD/MM/YYYY')}, function (err) {
+          Rcl.remove({ pol: q.pol, pod: q.pod, time: oPa.ctl00$ContentPlaceHolder1$vsdate }, function (err, rclData) {
             if (err) {
-              console.log(`删除 历史 日期-组合数据 发生错误 ${JSON.stringify({pol: q.pol, pod: q.pod, time: moment().format('DD/MM/YYYY')})}`)
-              logUtil.spiderLogger(`删除 历史 日期-组合数据 发生错误 ${JSON.stringify({pol: q.pol, pod: q.pod, time: moment().format('DD/MM/YYYY')})}`)
+              console.log(`删除 历史 日期-组合数据 发生错误 ${JSON.stringify({
+                pol: q.pol,
+                pod: q.pod,
+                time: oPa.ctl00$ContentPlaceHolder1$vsdate
+              })}`)
+              logUtil.spiderLogger(`删除 历史 日期-组合数据 发生错误 ${JSON.stringify({
+                pol: q.pol,
+                pod: q.pod,
+                time: oPa.ctl00$ContentPlaceHolder1$vsdate
+              })}`)
               reject(err)
             } else {
+              // 需要查看下返回进行修改 todo
+              logUtil.spiderLogger(`删除 历史 日期-组合数据 ${JSON.stringify({
+                pol: q.pol,
+                pod: q.pod,
+                time: oPa.ctl00$ContentPlaceHolder1$vsdate
+              })}， ${JSON.stringify(rclData)}`)
               Rcl.insertMany(data, function (err) { // 存入多条数据
                 if (err) {
                   console.log('写入错误')
@@ -292,8 +318,15 @@ exports.portGroupOne = async (ctx, next) => { // 起点终点查询
                   logUtil.spiderLogger(`入库成功 ${data.length} 条数据`)
 
                   // 跟新组合
-                  PortGroup.update({ portPol: q.pol, portPod: q.pod },
-                    { portPol: q.pol, portPod: q.pod, status: 1, content: Ele, userTime: endTime - startTime },
+                  PortGroup.update({ portPol: q.pol, portPod: q.pod, date: oPa.ctl00$ContentPlaceHolder1$vsdate },
+                    {
+                      portPol: q.pol,
+                      portPod: q.pod,
+                      status: 1,
+                      content: Ele,
+                      userTime: endTime - startTime,
+                      date: oPa.ctl00$ContentPlaceHolder1$vsdate
+                    },
                     { upsert: true }, function (err) {
                       if (err) {
                         logUtil.spiderLogger('获取数据成功---插入/更新组合错误')
@@ -311,8 +344,15 @@ exports.portGroupOne = async (ctx, next) => { // 起点终点查询
           logUtil.spiderLogger(`组合未查到数据 pol: ${q.pol},pod: ${q.pod}`)
 
           // 跟新组合
-          PortGroup.update({ portPol: q.pol, portPod: q.pod },
-            { portPol: q.pol, portPod: q.pod, status: 2, content: Ele, userTime: endTime - startTime },
+          PortGroup.update({ portPol: q.pol, portPod: q.pod, date: oPa.ctl00$ContentPlaceHolder1$vsdate },
+            {
+              portPol: q.pol,
+              portPod: q.pod,
+              status: 2,
+              content: Ele,
+              userTime: endTime - startTime,
+              date: oPa.ctl00$ContentPlaceHolder1$vsdate
+            },
             { upsert: true }, function (err) {
               if (err) {
                 logUtil.spiderLogger('无数据---插入/更新组合错误')
@@ -330,8 +370,15 @@ exports.portGroupOne = async (ctx, next) => { // 起点终点查询
         console.log('捕获到 外部接口请求错误。', err.status)
         logUtil.spiderLogger(`捕获到 外部接口请求错误。完整错误信息：${JSON.stringify(err)}`)
         // 跟新组合
-        PortGroup.update({ portPol: q.pol, portPod: q.pod },
-          { portPol: q.pol, portPod: q.pod, status: 3, content: JSON.stringify(err), userTime: endTime - startTime },
+        PortGroup.update({ portPol: q.pol, portPod: q.pod, date: oPa.ctl00$ContentPlaceHolder1$vsdate },
+          {
+            portPol: q.pol,
+            portPod: q.pod,
+            status: 3,
+            content: JSON.stringify(err),
+            userTime: endTime - startTime,
+            date: oPa.ctl00$ContentPlaceHolder1$vsdate
+          },
           { upsert: true }, function (err) {
             if (err) {
               logUtil.spiderLogger('获取数据异常---插入/更新组合错误')
@@ -372,19 +419,22 @@ exports.portList = async (ctx, next) => {
         let textArr = $(ele).text().split(' - ')
         let obj = {
           portCode: textArr[0],        // 获取新闻标题
-          port: textArr[1]    // 获取新闻网页链接
+          port: textArr[1],    // 获取新闻网页链接
+          date: moment().format('DD/MM/YYYY')
         }
         dataArr.push(obj)
       })
 
-      Port.remove().then(() => {
-        console.log('删除')
+      Port.remove({ date: moment().format('DD/MM/YYYY') }).then((da) => {
+        console.log('删除港口数据', { date: moment().format('DD/MM/YYYY') }, da.result)
+        logUtil.spiderLogger(`删除港口数据: ${JSON.stringify(da.result)}`)
         Port.insertMany(dataArr, function (err) { // 存入多条数据
           if (err) {
-            console.log('写入错误')
+            console.log('写入港口数据错误')
             reject(err)
           } else {
-            console.log('批量写入')
+            console.log('批量写入港口数据')
+            logUtil.spiderLogger(`批量写入港口数据 ${dataArr.length} 条`)
             resolve(dataArr)
           }
         })
