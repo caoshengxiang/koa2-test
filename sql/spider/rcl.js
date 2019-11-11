@@ -146,8 +146,8 @@ exports.mapPortGroup = async (ctx, next) => { // 港口组合
           // let da = await Func(i, j)
           console.log('one await end', i, j)
           logUtil.spiderLogger(`一个异步 await 结束 --- i: ${i}, j: ${j}`)
-          logUtil.spiderLogger(`完成进度:(${((i) * OTHERARR.length + j + 1)}/${CNARR.length * OTHERARR.length}), ${((i + 1) * OTHERARR.length + j + 1) / (CNARR.length * OTHERARR.length)}`)
-          console.log(`完成进度:(${((i) * OTHERARR.length + j + 1)}/${CNARR.length * OTHERARR.length}), ${((i + 1) * OTHERARR.length + j + 1) / (CNARR.length * OTHERARR.length)}`)
+          logUtil.spiderLogger(`完成进度:(${((i) * OTHERARR.length + j + 1)}/${CNARR.length * OTHERARR.length}), ${((i) * OTHERARR.length + j + 1) / (CNARR.length * OTHERARR.length)}`)
+          console.log(`完成进度:(${((i) * OTHERARR.length + j + 1)}/${CNARR.length * OTHERARR.length}), ${((i) * OTHERARR.length + j + 1) / (CNARR.length * OTHERARR.length)}`)
           logUtil.spiderLogger('----------------')
           logUtil.spiderLogger('----------------')
         }
