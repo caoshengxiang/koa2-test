@@ -14,6 +14,7 @@ router.get('/s/rcl/port/list', rcl.portList) // 港口
 router.get('/s/rcl/port/code', rcl.testCodeImg)
 router.get('/s/rcl/port/group/one', rcl.portGroupOne) // 一个组合
 router.get('/s/rcl/port/group/all', rcl.mapPortGroup) // 组合
+router.get('/s/rcl/port/group/has/err', rcl.mapPortGroupHasError) // 组合status 3和4的
 router.post('/s/rcl/port/local', rcl.portListLocal) // 本地港口列表
 router.get('/s/rcl/test/rq', rcl.testRequest)
 

@@ -40,7 +40,7 @@ exports.portListLocal = async (ctx, next) => {
 exports.testRequest = async (ctx, next) => {  // 测试循环请求
   async function Func (i, j) { // 测试循环请求
     return new Promise((resolve, reject) => {
-      superagent.post('http://localhost:3001/spider/s/rcl/port/local')
+      superagent.post('http://localhost:3000/spider/s/rcl/port/local')
         .then(res => {
           // console.log(res) // superagent 返回 res.text 文本才是上个接口返回的数据
           setTimeout(() => {
@@ -70,6 +70,63 @@ exports.testRequest = async (ctx, next) => {  // 测试循环请求
   }
 }
 
+exports.mapPortGroupHasError = async (ctx, next) => { // 有异常港口组合
+  const params = ctx.request.query
+  let date = params.date || moment().format('DD/MM/YYYY')
+  let status = params.status || '3,4'
+  status = status.split(',')
+
+  async function oneGroup (pol, pod) {
+    let startTime = new Date().getTime()
+    return new Promise((resolve, reject) => {
+      superagent.get('http://localhost:3000/spider/s/rcl/port/group/one').query({
+        pol: pol,
+        pod: pod
+      })
+        .then(res => {
+          resolve(JSON.parse(res.text).data)
+        })
+        .catch(err => {
+          console.log('mapPortGroupHasError 错误----resolve继续执行 next-----')
+          logUtil.spiderLogger(`mapPortGroupHasError 错误----resolve继续执行 next--- ${err}`)
+          // 跟新组合(处理 Error: socket hang up)
+          PortGroup.update({ portPol: pol, portPod: pod, date: moment().format('DD/MM/YYYY') },
+            { portPol: pol, portPod: pod, status: 4, content: '', userTime: '', date: moment().format('DD/MM/YYYY') },
+            { upsert: true }, function (err) {
+              if (err) {
+                logUtil.spiderLogger('mapPortGroupHasError 错误处理 Error: socket hang up---插入/更新组合错误')
+                resolve('mapPortGroupHasError 错误处理 Error: socket hang up---插入/更新组合错误')
+              } else {
+                logUtil.spiderLogger(`mapPortGroupHasError 错误处理 Error: socket hang up---插入/更新组合成功 ${pol}-${pod}-4`)
+                resolve([])
+              }
+            })
+          resolve(err)
+        })
+    })
+  }
+
+  await new Promise((resolve, reject) => {
+    PortGroup.find({ status: { $in: status }, date: date }).then(async gda => {
+      for (let i = 0; i < gda.length; i++) {
+        let oneDa = await oneGroup(gda[i].portPol, gda[i].portPod)
+        console.log(`重获异常数据（${(i + 1) / gda.length}）`)
+      }
+      resolve('mapPortGroupHasError ok! 组合任务结束。')
+    }).catch(err => {
+      reject(err)
+    })
+  }).then(da => {
+    ctx.body = {
+      data: da
+    }
+  }).catch(err => {
+    ctx.body = {
+      error: err
+    }
+  })
+}
+
 exports.mapPortGroup = async (ctx, next) => { // 港口组合
   console.log('组合查询开始')
   logUtil.spiderLogger('*********组合查询开始*********')
@@ -77,7 +134,7 @@ exports.mapPortGroup = async (ctx, next) => { // 港口组合
   async function oneGroup (pol, pod) {
     let startTime = new Date().getTime()
     return new Promise((resolve, reject) => {
-      superagent.get('http://localhost:3001/spider/s/rcl/port/group/one').query({
+      superagent.get('http://localhost:3000/spider/s/rcl/port/group/one').query({
         pol: pol,
         pod: pod
       })
@@ -107,7 +164,7 @@ exports.mapPortGroup = async (ctx, next) => { // 港口组合
   async function Func (i, j) { // 测试循环请求
     let startTime = new Date().getTime()
     return new Promise((resolve, reject) => {
-      superagent.post('http://localhost:3001/spider/s/rcl/port/local').query({ i, j })
+      superagent.post('http://localhost:3000/spider/s/rcl/port/local').query({ i, j })
         .then(res => {
           // console.log(res) // superagent 返回 res.text 文本才是上个接口返回的数据
           setTimeout(() => {
@@ -129,7 +186,10 @@ exports.mapPortGroup = async (ctx, next) => { // 港口组合
       let CNARR = []
       let OTHERARR = []
       da.map((item => {
-          if (item.portCode.substr(0, 2) == 'CN' || item.portCode == 'HKHKG') {
+          if (item.portCode == 'HKHKG') {
+            CNARR.push(item.portCode)
+            OTHERARR.push(item.portCode)
+          } else if (item.portCode.substr(0, 2) == 'CN') {
             CNARR.push(item.portCode)
           } else {
             OTHERARR.push(item.portCode)
@@ -152,7 +212,7 @@ exports.mapPortGroup = async (ctx, next) => { // 港口组合
           logUtil.spiderLogger('----------------')
         }
       }
-      resolve('ok!')
+      resolve('ok! 组合任务结束。')
     }).catch(err => {
       reject(err)
     })

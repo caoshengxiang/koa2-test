@@ -11,6 +11,7 @@
     <button onclick="getPortGroup()">测试组合查询</button>
     <button onclick="test()">test</button>
     <button onclick="getPortGroupAll()">所有组合查询</button>
+    <button onclick="getPortGroupHasErr()">所有组合查询有错误的</button>
 </body>
 <script src="jquery-3.2.1.js"></script>
 <script>
@@ -18,7 +19,7 @@
     $.ajax({
       type: 'get',
       dataType: 'json',
-      url: 'http://localhost:3001/spider/s/rcl/port/list',
+      url: 'http://localhost:3000/spider/s/rcl/port/list',
       success: function (data) {
         console.log(data)
       }
@@ -29,7 +30,8 @@
     $.ajax({
       type: 'post',
       dataType: 'json',
-      url: 'http://localhost:3001/spider/s/rcl/port/local',
+      // url: 'http://localhost:3000/spider/s/rcl/port/local',
+      url: 'http://52.14.39.214:3000/spider/s/rcl/port/local',
       success: function (data) {
         console.log(data)
       }
@@ -40,7 +42,7 @@
     $.ajax({
       type: 'get',
       dataType: 'json',
-      url: 'http://localhost:3001/spider/s/rcl/port/code',
+      url: 'http://localhost:3000/spider/s/rcl/port/code',
       success: function (data) {
         console.log(data)
       }
@@ -52,7 +54,7 @@
   //     type: 'get',
   //     dataType: 'json',
   //     // data: $('#gParams').val(),
-  //     url: 'http://52.14.39.214:3001/spider/s/rcl/port/group/one?pol=CNAQG&pod=AEDXB',
+  //     url: 'http://52.14.39.214:3000/spider/s/rcl/port/group/one?pol=CNAQG&pod=AEDXB',
   //     success: function (data) {
   //       console.log(data)
   //     }
@@ -64,7 +66,7 @@
       type: 'get',
       dataType: 'json',
       // data: $('#gParams').val(),
-      url: 'http://localhost:3001/spider/s/rcl/port/group/one?pol=CNAQG&pod=AEDXB',
+      url: 'http://localhost:3000/spider/s/rcl/port/group/one?pol=CNAQG&pod=AEDXB',
       success: function (data) {
         console.log(data)
       }
@@ -77,7 +79,20 @@
       timeout: 2*24*60*60*1000,
       dataType: 'json',
       // data: $('#gParams').val(),
-      url: 'http://localhost:3001/spider/s/rcl/port/group/all',
+      url: 'http://localhost:3000/spider/s/rcl/port/group/all',
+      success: function (data) {
+        console.log(data)
+      }
+    })
+  }
+
+  function getPortGroupHasErr () {
+    $.ajax({
+      type: 'get',
+      timeout: 2*24*60*60*1000,
+      dataType: 'json',
+      // data: $('#gParams').val(),
+      url: 'http://localhost:3000/spider/s/rcl/port/group/has/err?status=4',
       success: function (data) {
         console.log(data)
       }
@@ -89,7 +104,7 @@
       type: 'get',
       dataType: 'json',
       // data: $('#gParams').val(),
-      url: 'http://localhost:3001/spider/s/rcl/test/rq?id=1',
+      url: 'http://localhost:3000/spider/s/rcl/test/rq?id=1',
       success: function (data) {
         console.log(data)
       }
