@@ -9,7 +9,7 @@ let scheduleTask = null
 
 module.exports = task1 = () => {
   //每分钟的1-10秒都会触发，其它通配符依次类推
-  scheduleTask = schedule.scheduleJob('1 1 1 * * *', () => {
+  scheduleTask = schedule.scheduleJob('1 22 * * * *', () => {
     console.log('scheduleCronstyle:' + new Date())
     superagent.get('http://localhost:3000/spider/s/rcl/port/list').then(portDa => {
       logUtil.spiderLogger(`定时任务---组合查询-获取港口数据-成功。`)

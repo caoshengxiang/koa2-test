@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <button onclick="getPortList()">获取港口</button>
+    <button onclick="getPortListLocal()">获取港口(本地)</button>
+    <button onclick="getPortCodeImg()">识别图像</button>
+    <button onclick="getPortGroup()">测试组合查询</button>
+    <button onclick="test()">test</button>
+    <button onclick="getPortGroupAll()">所有组合查询</button>
+    <button onclick="getPortGroupHasErr()">所有组合查询有错误的</button>
+</body>
+<script src="jquery-3.2.1.js"></script>
+<script>
+  function getPortList () {
+    $.ajax({
+      type: 'get',
+      dataType: 'json',
+      url: 'http://49.235.131.71:3000/spider/s/rcl/port/list',
+      success: function (data) {
+        console.log(data)
+      }
+    })
+  }
+
+  function getPortListLocal () {
+    $.ajax({
+      type: 'post',
+      dataType: 'json',
+      url: 'http://49.235.131.71:3000/spider/s/rcl/port/local',
+      success: function (data) {
+        console.log(data)
+      }
+    })
+  }
+
+  function getPortCodeImg () {
+    $.ajax({
+      type: 'get',
+      dataType: 'json',
+      url: 'http://49.235.131.71:3000/spider/s/rcl/port/code',
+      success: function (data) {
+        console.log(data)
+      }
+    })
+  }
+
+  // function getPortGroup () {
+  //   $.ajax({
+  //     type: 'get',
+  //     dataType: 'json',
+  //     // data: $('#gParams').val(),
+  //     url: 'http://52.14.39.214:3000/spider/s/rcl/port/group/one?pol=CNAQG&pod=AEDXB',
+  //     success: function (data) {
+  //       console.log(data)
+  //     }
+  //   })
+  // }
+  //
+  function getPortGroup () {
+    $.ajax({
+      type: 'get',
+      dataType: 'json',
+      // data: $('#gParams').val(),
+      url: 'http://49.235.131.71:3000/spider/s/rcl/port/group/one?pol=CNAQG&pod=AEDXB',
+      success: function (data) {
+        console.log(data)
+      }
+    })
+  }
+
+  function getPortGroupAll () {
+    $.ajax({
+      type: 'get',
+      timeout: 2*24*60*60*1000,
+      dataType: 'json',
+      // data: $('#gParams').val(),
+      url: 'http://49.235.131.71:3000/spider/s/rcl/port/group/all',
+      success: function (data) {
+        console.log(data)
+      }
+    })
+  }
+
+  function getPortGroupHasErr () {
+    $.ajax({
+      type: 'get',
+      timeout: 2*24*60*60*1000,
+      dataType: 'json',
+      // data: $('#gParams').val(),
+      url: 'http://49.235.131.71:3000/spider/s/rcl/port/group/has/err?status=4',
+      success: function (data) {
+        console.log(data)
+      }
+    })
+  }
+
+  function test () {
+    $.ajax({
+      type: 'get',
+      dataType: 'json',
+      // data: $('#gParams').val(),
+      url: 'http://49.235.131.71:3000/spider/s/rcl/test/rq?id=1',
+      success: function (data) {
+        console.log(data)
+      }
+    })
+  }
+</script>
+</html>

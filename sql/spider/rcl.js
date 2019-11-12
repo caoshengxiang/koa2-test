@@ -182,7 +182,8 @@ exports.mapPortGroup = async (ctx, next) => { // 港口组合
   }
 
   await new Promise((resolve, reject) => {
-    Port.find({}).then(async da => {
+    // 只查当天的数据
+    Port.find({date: moment().format('DD/MM/YYYY')}).then(async da => {
       let CNARR = []
       let OTHERARR = []
       da.map((item => {
