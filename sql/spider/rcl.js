@@ -21,7 +21,7 @@ const moment = require('moment')
 exports.portListLocalGet = async (ctx, next) => {
   let params = ctx.request.query
   logUtil.spiderLogger('请求：')
-  logUtil.spiderLogger(ctx.request)
+  logUtil.spiderLogger(ctx)
   await new Promise((resolve, reject) => {
     Port.find().then(da => {
       resolve(da)
