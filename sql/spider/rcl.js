@@ -2,6 +2,7 @@ const StatusCode = require('../../config/status_code')
 const Rcl = require('../schema/rcl')
 const Port = require('../schema/port')
 const PortGroup = require('../schema/portGorup')
+const portChange = require('../schema/portChange')
 const logUtil = require('../../utils/log_util')
 
 /*
@@ -16,6 +17,28 @@ const cheerio = require('cheerio')
 const tesseract = require('tesseract.js')
 const PARAMS = require('../test')
 const moment = require('moment')
+
+exports.portListLocalGet = async (ctx, next) => {
+  let params = ctx.request.query
+  logUtil.spiderLogger('请求：')
+  logUtil.spiderLogger(ctx.request)
+  await new Promise((resolve, reject) => {
+    Port.find().then(da => {
+      resolve(da)
+    }).catch(err => {
+      reject(err)
+    })
+  }).then(da => {
+    ctx.body = {
+      // data: da,
+      id: params.id
+    }
+  }).catch(err => {
+    ctx.body = {
+      error: err
+    }
+  })
+}
 
 exports.portListLocal = async (ctx, next) => {
   // let params = ctx.request.body
@@ -38,6 +61,8 @@ exports.portListLocal = async (ctx, next) => {
 }
 
 exports.testRequest = async (ctx, next) => {  // 测试循环请求
+  let params = ctx.request.query
+
   async function Func (i, j) { // 测试循环请求
     return new Promise((resolve, reject) => {
       superagent.post('http://localhost:3000/spider/s/rcl/port/local')
@@ -45,7 +70,10 @@ exports.testRequest = async (ctx, next) => {  // 测试循环请求
           // console.log(res) // superagent 返回 res.text 文本才是上个接口返回的数据
           setTimeout(() => {
             console.log('接口调用一次', i, j)
-            resolve(JSON.parse(res.text).data)
+            resolve({
+              arr: JSON.parse(res.text).data,
+              p: params.id
+            })
           }, 2000)
 
         })
@@ -183,7 +211,7 @@ exports.mapPortGroup = async (ctx, next) => { // 港口组合
 
   await new Promise((resolve, reject) => {
     // 只查当天的数据
-    Port.find({date: moment().format('DD/MM/YYYY')}).then(async da => {
+    Port.find({ date: moment().format('DD/MM/YYYY') }).then(async da => {
       let CNARR = []
       let OTHERARR = []
       da.map((item => {
@@ -485,20 +513,25 @@ exports.portList = async (ctx, next) => {
         }
         dataArr.push(obj)
       })
-
-      Port.remove({ date: moment().format('DD/MM/YYYY') }).then((da) => {
-        console.log('删除港口数据', { date: moment().format('DD/MM/YYYY') }, da.result)
-        logUtil.spiderLogger(`删除港口数据: ${JSON.stringify(da.result)}`)
-        Port.insertMany(dataArr, function (err) { // 存入多条数据
-          if (err) {
-            console.log('写入港口数据错误')
-            reject(err)
-          } else {
-            console.log('批量写入港口数据')
-            logUtil.spiderLogger(`批量写入港口数据 ${dataArr.length} 条`)
-            resolve(dataArr)
-          }
-        })
+      portChange.create({ created: moment().format('YYYY-MM-mm HH:mm:ss'), num: dataArr.length }, function (err) {
+        if (err) {
+          reject('写入错误')
+        } else {
+          Port.remove({ date: moment().format('DD/MM/YYYY') }).then((da) => {
+            console.log('删除港口数据', { date: moment().format('DD/MM/YYYY') }, da.result)
+            logUtil.spiderLogger(`删除港口数据: ${JSON.stringify(da.result)}`)
+            Port.insertMany(dataArr, function (err) { // 存入多条数据
+              if (err) {
+                console.log('写入港口数据错误')
+                reject(err)
+              } else {
+                console.log('批量写入港口数据')
+                logUtil.spiderLogger(`批量写入港口数据 ${dataArr.length} 条`)
+                resolve(dataArr)
+              }
+            })
+          })
+        }
       })
     }).catch(err => {
       reject(err)

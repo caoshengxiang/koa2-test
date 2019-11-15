@@ -12,6 +12,11 @@
     <button onclick="test()">test</button>
     <button onclick="getPortGroupAll()">所有组合查询</button>
     <button onclick="getPortGroupHasErr()">所有组合查询有错误的</button>
+    <br>
+    <br>
+    <br>
+    <br>
+    <button onclick="testLocal()">test本地</button>
 </body>
 <script src="jquery-3.2.1.js"></script>
 <script>
@@ -19,7 +24,8 @@
     $.ajax({
       type: 'get',
       dataType: 'json',
-      url: 'http://49.235.131.71:3000/spider/s/rcl/port/list',
+      url: 'http://localhost:3000/spider/s/rcl/port/list',
+      // url: 'http://49.235.131.71:3000/spider/s/rcl/port/list',
       success: function (data) {
         console.log(data)
       }
@@ -104,6 +110,18 @@
       dataType: 'json',
       // data: $('#gParams').val(),
       url: 'http://49.235.131.71:3000/spider/s/rcl/test/rq?id=1',
+      success: function (data) {
+        console.log(data)
+      }
+    })
+  }
+
+  function testLocal () {
+    $.ajax({
+      type: 'get',
+      dataType: 'json',
+      // data: $('#gParams').val(),
+      url: 'http://localhost:3000/spider/s/rcl/test/rq?id=1',
       success: function (data) {
         console.log(data)
       }

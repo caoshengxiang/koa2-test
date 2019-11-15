@@ -10,7 +10,8 @@ const logger = require('koa-logger')
 const index = require('./routes/index')
 const api = require('./routes/api')
 const spider = require('./routes/spider')
-const task1 = require('./sql/schedule')
+const task2 = require('./sql/schedule')
+// const task1 = require('./sql/schedule')
 
 // 测试websocket
 // require('./sql/control/websocket')
@@ -19,7 +20,8 @@ const task1 = require('./sql/schedule')
 const logUtil = require('./utils/log_util')
 
 // 任务
-task1()
+// task1()
+task2()
 
 // error handler
 onerror(app)
