@@ -513,7 +513,7 @@ exports.portList = async (ctx, next) => {
         }
         dataArr.push(obj)
       })
-      portChange.create({ created: moment().format('YYYY-MM-mm HH:mm:ss'), num: dataArr.length }, function (err) {
+      portChange.create({ created: moment().format('YYYY-MM-DD HH:mm:ss'), num: dataArr.length }, function (err) {
         if (err) {
           reject('写入错误')
         } else {
