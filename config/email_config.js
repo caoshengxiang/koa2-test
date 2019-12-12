@@ -6,6 +6,6 @@ module.exports = {
     // user: '1104729815@qq.com',
     // pass: 'xlpiizbmdissjbib',
     user: '1134767313@qq.com',
-    pass: 'quqndrsmziqoiacb',
+    pass: 'dxaajciwbtadidfd',
   }
 }
