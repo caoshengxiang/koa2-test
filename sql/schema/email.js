@@ -13,6 +13,7 @@ const emailSchema = Schema({
   subject: String, // 标题
   content: String, // 正文
   created: Number, // 创建时间戳
+  country: String, // 国家
 })
 
 module.exports = mongoose.model('Email', emailSchema)

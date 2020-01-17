@@ -196,6 +196,7 @@ exports.send = async (ctx, next) => {
   let start = Date.now()
   let html = `
             <p>名字：${reqBody.name}</p>
+            <p>国家：${reqBody.country}</p>
             <p>邮箱: ${reqBody.email}</p>
             <p>电话：${reqBody.phone}</p>
             <p>公司：${reqBody.company}</p>
