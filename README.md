@@ -170,6 +170,16 @@ D:\an\mongodb\bin>mongod --dbpath D:\an\mongodb\data\db --logpath D:\an\mongodb\
     bind_ip = 0.0.0.0
 ```
 
+# 数据库操作
+进入bin目录
+1. 关闭 ./mongod --shutdown --config mongodb.conf
+1. 启动 ./mongod --config mongodb.conf
+1. 启动(开启安全验证,就必须要用--auth) ./mongod --auth --config mongodb.conf 
+1. 链接 ./mongo admin -u root -p 20200421Cosplay!!!
+
+>All your data is a backed up. You must pay 0.015 BTC to 1JNL8EyXwY3tAf1qtxCxCJwdct1UrT5LMJ 48 hours for recover it. After 48 hours expiration we will leaked and exposed all your data. In case of refusal to pay, we will contact the General Data Protection Regulation, GDPR and notify them that you store user data in an open form and is not safe. Under the rules of the law, you face a heavy fine or arrest and your base dump will be dropped from our server! You can buy bitcoin here, does not take much time to buy https://localbitcoins.com with this guide https://localbitcoins.com/guides/how-to-buy-bitcoins After paying write to me in the mail with your DB IP: getbase@cock.li
+
+
 4. [git](https://git-scm.com/download/linux) 
 >4.1  直接 yum install git 安装; 
  4.2 也可以[解压安装](https://www.cnblogs.com/gaogaoyanjiu/p/9463879.html)
