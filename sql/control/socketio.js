@@ -1,6 +1,9 @@
 const Chat = require('../schema/chat')
 const StatusCode = require('../../config/status_code')
-
+const cache = require('../../var/var')
+cache['clientChatDic'].set('100', {uid: 100})
+console.log(cache)
+console.log('缓存4')
 module.exports = function (server) {
   var io = require('socket.io')(server)
   var group = {} // 用对象是可以去重用户得

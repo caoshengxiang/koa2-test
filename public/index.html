@@ -89,7 +89,7 @@
       type: 'post',
       dataType: 'json',
       // data: {name: 'allen'},
-      url: '/api/users/userList',
+      url: 'http://localhost:3000/api/users/userList',
       success: function (data) {
         var str = ''
         if (!data.data.length) {
@@ -103,7 +103,7 @@
               '<td>' + data.data[i].sex + '</td>' +
               '<td><img style="width: 30px" src="' + data.data[i].icon + '"></td>' +
               '<td>' + data.data[i].password + '</td>' +
-              '<td><a data-id="' + data.data[i]._id + '" class="modify">修改</a>　<a  data-id="' + data.data[i]._id + '" class="del">删除</a></td>' +
+              '<td><a data-id="' + data.data[i]._id + '" class="modify">编辑</a>　<a  data-id="' + data.data[i]._id + '" class="del">删除</a></td>' +
               '</tr>'
           }
           $('#userList').html(str).delegate('.modify', 'click', function (event) {
@@ -124,7 +124,7 @@
       type: 'get',
       dataType: 'json',
       data: {id: id},
-      url: '/api/users/getUserInfo',
+      url: 'http://localhost:3000/api/users/getUserInfo',
       success: function (d) {
         $('#name2').val(d.data.name)
         $('#age2').val(d.data.age)
@@ -140,7 +140,7 @@
     $.ajax({
       type: 'get',
       dataType: 'json',
-      url: '/api/users/getUser',
+      url: 'http://localhost:3000/api/users/getUser',
       success: function (data) {
         console.log(data)
         $('#userName').text(data.data.name)
@@ -149,21 +149,21 @@
   }
 
   function apiAddUser(param) {
-    $.post('/api/users/addUser', param, function (data) {
+    $.post('http://localhost:3000/api/users/addUser', param, function (data) {
       console.log(data)
       apiUserList() // 拉列表
     }, 'json')
   }
 
   function modifyUser(id, param) {
-    $.post('/api/users/update/'+id, param, function (data) {
+    $.post('http://localhost:3000/api/users/update/'+id, param, function (data) {
       console.log(data)
       apiUserList() // 拉列表
     }, 'json')
   }
 
   function delUser(param) {
-    $.post('/api/users/removeUser', param, function (data) {
+    $.post('http://localhost:3000/api/users/removeUser', param, function (data) {
       console.log(data)
       apiUserList() // 拉列表
     }, 'json')

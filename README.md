@@ -95,7 +95,10 @@ PM2 是一个带有负载均衡功能的 Node 应用的进程管理器。
 ```shell
 E:\workSoft\MongoDB\Server\3.2\bin>mongod --dbpath E:\workSoft\MongoDB\data\db --logpath \data\log
 ```
-
+公司电脑 mongodb启动
+```shell
+D:\an\mongodb\bin>mongod --dbpath D:\an\mongodb\data\db --logpath \data\log
+```
 ### 开机启动
 
 ### 启动配置文件
