@@ -213,6 +213,10 @@
             $('#background').hide()
             sessionStorage.u = JSON.stringify(data.data)
             socket = io.connect('http://localhost:3000?id='+data.data._id)
+
+            socket.on('connect', function () {
+              console.log('连接ok')
+            })
             socket.on('news', function (data) {
               // console.log(data)
               chatBox.prepend('<li>' + formatDate(data.sendTime) + '<br>' + data.from + ': ' + data.content + '</li>')

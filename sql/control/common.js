@@ -1,7 +1,7 @@
 const StatusCode = require('../../config/status_code')
-const request = require('request')
 const fs = require('fs')
 const path = require('path')
+const config = require('../../config/index')
 
 // koa-body 上传 (单文件)
 exports.upload = async (ctx, next) => {
@@ -15,6 +15,7 @@ exports.upload = async (ctx, next) => {
 
   // 创建可读流
   const reader = fs.createReadStream(file.path)
+  let fileName = file.name
   let nFileNeme = `/${new Date().getTime()}-${file.name}`
   let filePath = path.join(__dirname, '../../public/uploads/')
   let fileResource = filePath + nFileNeme
@@ -35,7 +36,8 @@ exports.upload = async (ctx, next) => {
         ctx.body = {
           status: StatusCode.SUCCESS,
           data: {
-            url: 'uploads' + nFileNeme
+            url: config.HOST + '/uploads' + nFileNeme,
+            fileName: fileName
           }
         }
       }
@@ -48,7 +50,8 @@ exports.upload = async (ctx, next) => {
     ctx.body = {
       status: StatusCode.SUCCESS,
       data: {
-        url: 'uploads' + nFileNeme
+        url: config.HOST + '/uploads' + nFileNeme,
+        fileName: fileName
       }
     }
   }

@@ -17,6 +17,7 @@ router.post('/users/update/:id', userApi.updateUser)
 
 // 聊天
 router.post('/chat/list', chatApi.chatList)
+router.get('/getIMServerList', chatApi.getIMServerList)
 
 // 登录
 router.post('/user/login', accountApi.userLogin)
